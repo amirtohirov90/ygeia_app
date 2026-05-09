@@ -7,6 +7,8 @@ import '../services/auth_service.dart';
 import '../services/user_profile_service.dart';
 import '../services/english_service.dart';
 import '../services/nutrition_service.dart';
+import '../services/subscription_service.dart';
+import '../services/notification_service.dart';
 import 'auth_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -23,6 +25,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String? _nickname;
   String? _avatarPath;
   EnglishProgress _englishProgress = EnglishProgress.empty();
+  SubscriptionStatus? _subscription;
+  bool _notificationsEnabled = false;
   bool _loading = true;
 
   @override
@@ -35,11 +39,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final nick = await _profileService.getNickname();
     final avatar = await _profileService.getAvatarPath();
     final engProgress = await EnglishService().getProgress();
+    final sub = await SubscriptionService.getSubscription();
+    final notifEnabled = await NotificationService.isEnabled();
     if (mounted) {
       setState(() {
         _nickname = nick;
         _avatarPath = avatar;
         _englishProgress = engProgress;
+        _subscription = sub;
+        _notificationsEnabled = notifEnabled;
         _loading = false;
       });
     }
@@ -293,6 +301,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                     const SizedBox(height: 24),
 
+                    // ── Subscription card ───────────────────────────────────
+                    _buildSubscriptionCard(),
+
+                    const SizedBox(height: 16),
+
                     // ── Progress stats ──────────────────────────────────────
                     _buildProgressStats(),
 
@@ -325,19 +338,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                     // ── Menu items ──────────────────────────────────────────
                     _MenuItem(
-                        icon: Icons.stars_outlined, title: 'Моя подписка'),
-                    _MenuItem(
                         icon: Icons.bookmark_outline,
                         title: 'Сохранённые'),
                     _MenuItem(
                         icon: Icons.shopping_bag_outlined,
                         title: 'Мои покупки'),
                     _MenuItem(
-                        icon: Icons.notifications_outlined,
-                        title: 'Уведомления'),
-                    _MenuItem(
                         icon: Icons.settings_outlined,
                         title: 'Настройки'),
+                    _NotificationTile(
+                      enabled: _notificationsEnabled,
+                      onChanged: (v) async {
+                        await NotificationService.setEnabled(v);
+                        setState(() => _notificationsEnabled = v);
+                      },
+                    ),
 
                     if (user != null) ...[
                       const SizedBox(height: 16),
@@ -365,6 +380,178 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
         );
       },
+    );
+  }
+
+  Widget _buildSubscriptionCard() {
+    final sub = _subscription;
+
+    // Активная подписка клуба
+    if (sub != null && sub.isActive && sub.isClub) {
+      final expiring = sub.isExpiringSoon;
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFF2D6A4F), Color(0xFF40916C)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF2D6A4F).withOpacity(0.25),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 46,
+              height: 46,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.stars, color: Colors.white, size: 24),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    sub.planTitle,
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    sub.expiresAt != null
+                        ? 'Активен · ${sub.expiresLabel}'
+                        : 'Активен',
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      color: Colors.white.withOpacity(0.85),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (expiring)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE07A5F),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  'Скоро истечёт',
+                  style: GoogleFonts.inter(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      );
+    }
+
+    // Куплена книга (без срока)
+    if (sub != null && sub.isActive && sub.isBook) {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: const Color(0xFFFAF4EC),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0xFF2D6A4F).withOpacity(0.3)),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.menu_book, color: Color(0xFF2D6A4F), size: 28),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Text(
+                sub.planTitle,
+                style: GoogleFonts.inter(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF1A1A1A),
+                ),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: const Color(0xFF2D6A4F).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                'Куплено',
+                style: GoogleFonts.inter(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF2D6A4F),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Нет подписки — CTA
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFAF4EC),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFDDD5C8)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              color: const Color(0xFF2D6A4F).withOpacity(0.08),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.stars_outlined,
+                color: Color(0xFF2D6A4F), size: 22),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Клуб ygeia',
+                  style: GoogleFonts.inter(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF1A1A1A),
+                  ),
+                ),
+                Text(
+                  'Эксклюзивный контент и сообщество',
+                  style: GoogleFonts.inter(
+                      fontSize: 12, color: const Color(0xFF999999)),
+                ),
+              ],
+            ),
+          ),
+          const Icon(Icons.arrow_forward_ios,
+              size: 14, color: Color(0xFF999999)),
+        ],
+      ),
     );
   }
 
@@ -471,6 +658,41 @@ class _MenuItem extends StatelessWidget {
         trailing: const Icon(Icons.arrow_forward_ios,
             size: 14, color: Color(0xFF999999)),
         onTap: () {},
+      ),
+    );
+  }
+}
+
+class _NotificationTile extends StatelessWidget {
+  final bool enabled;
+  final ValueChanged<bool> onChanged;
+
+  const _NotificationTile({required this.enabled, required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFAF4EC),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: ListTile(
+        leading: const Icon(Icons.notifications_outlined,
+            color: Color(0xFF2D6A4F)),
+        title: Text('Уведомления',
+            style: GoogleFonts.inter(
+                fontSize: 15, color: const Color(0xFF1A1A1A))),
+        subtitle: Text(
+          enabled ? 'Утро 8:00 · Английский 20:00' : 'Выключены',
+          style: GoogleFonts.inter(
+              fontSize: 12, color: const Color(0xFF999999)),
+        ),
+        trailing: Switch(
+          value: enabled,
+          onChanged: onChanged,
+          activeColor: const Color(0xFF2D6A4F),
+        ),
       ),
     );
   }
