@@ -10,6 +10,7 @@ import 'screens/shop_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/splash_screen.dart';
+import 'screens/nutrition/nutrition_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -100,6 +101,7 @@ class _MainScreenState extends State<MainScreen> {
     ClubScreen(),
     ShopScreen(),
     ProfileScreen(),
+    NutritionScreen(),
   ];
 
   @override
@@ -143,6 +145,12 @@ class _MainScreenState extends State<MainScreen> {
             selectedIcon:
                 Icon(Icons.person, color: Color(0xFF2D6A4F)),
             label: 'Профиль',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.local_fire_department_outlined),
+            selectedIcon:
+                Icon(Icons.local_fire_department, color: Color(0xFF2D6A4F)),
+            label: 'КБЖУ',
           ),
         ],
       ),
