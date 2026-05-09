@@ -78,16 +78,28 @@ class PostCard extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-            child: Container(
-              height: 180,
-              width: double.infinity,
-              color: const Color(0xFF2D6A4F).withOpacity(0.1),
-              child: const Icon(
-                Icons.eco_outlined,
-                size: 60,
-                color: Color(0xFF2D6A4F),
-              ),
-            ),
+            child: post.imageUrl != null && post.imageUrl!.isNotEmpty
+                ? Image.network(
+                    post.imageUrl!,
+                    height: 200,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (context, child, progress) =>
+                        progress == null
+                            ? child
+                            : Container(
+                                height: 200,
+                                color: const Color(0xFF2D6A4F).withOpacity(0.08),
+                                child: const Center(
+                                  child: CircularProgressIndicator(
+                                    color: Color(0xFF2D6A4F),
+                                    strokeWidth: 2,
+                                  ),
+                                ),
+                              ),
+                    errorBuilder: (_, __, ___) => _placeholderImage(),
+                  )
+                : _placeholderImage(),
           ),
           Padding(
             padding: const EdgeInsets.all(16),
@@ -165,6 +177,15 @@ class PostCard extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget _placeholderImage() {
+  return Container(
+    height: 200,
+    width: double.infinity,
+    color: const Color(0xFF2D6A4F).withOpacity(0.08),
+    child: const Icon(Icons.eco_outlined, size: 60, color: Color(0xFF2D6A4F)),
+  );
 }
 
 const List<Map<String, String>> _staticPosts = [

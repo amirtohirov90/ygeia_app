@@ -6,6 +6,7 @@ class Post {
   final String body;
   final String date;
   final String category;
+  final String? imageUrl;
   final DateTime? createdAt;
 
   Post({
@@ -14,6 +15,7 @@ class Post {
     required this.body,
     required this.date,
     this.category = '',
+    this.imageUrl,
     this.createdAt,
   });
 
@@ -25,6 +27,7 @@ class Post {
       body: data['body'] ?? '',
       date: data['date'] ?? '',
       category: data['category'] ?? '',
+      imageUrl: data['imageUrl'],
       createdAt: (data['createdAt'] as Timestamp?)?.toDate(),
     );
   }
@@ -36,6 +39,7 @@ class Post {
       body: map['body'] ?? '',
       date: map['date'] ?? '',
       category: map['category'] ?? '',
+      imageUrl: map['imageUrl'],
     );
   }
 }
