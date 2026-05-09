@@ -55,7 +55,7 @@ class _FeedScreenState extends State<FeedScreen> {
           ),
         ),
         title: Text(
-          'ygeia',
+          'ygeía',
           style: GoogleFonts.playfairDisplay(
             color: Colors.white,
             fontSize: 24,
