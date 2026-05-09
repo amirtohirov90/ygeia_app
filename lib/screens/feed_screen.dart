@@ -45,25 +45,23 @@ class _FeedScreenState extends State<FeedScreen> {
       backgroundColor: const Color(0xFFF0E8DA),
       appBar: AppBar(
         backgroundColor: const Color(0xFF2D6A4F),
+        centerTitle: true,
         title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.eco, size: 18, color: Colors.white),
+            SizedBox(
+              width: 22,
+              height: 22,
+              child: CustomPaint(painter: _LeafPainter()),
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: 9),
             Text(
               'ygeia',
               style: GoogleFonts.playfairDisplay(
                 color: Colors.white,
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
+                letterSpacing: 0.5,
               ),
             ),
           ],
@@ -301,6 +299,50 @@ Widget _placeholderImage() {
     child:
         const Icon(Icons.eco_outlined, size: 60, color: Color(0xFF2D6A4F)),
   );
+}
+
+// ── Кастомный лист ───────────────────────────────────────────────────────────
+class _LeafPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height;
+
+    final fillPaint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.fill;
+
+    // Форма листа — миндалевидная, чуть наклонённая
+    final leaf = Path();
+    leaf.moveTo(w * 0.50, h * 0.98); // нижний кончик (стебель)
+    leaf.cubicTo(
+      w * -0.05, h * 0.75,
+      w * -0.05, h * 0.20,
+      w * 0.50, h * 0.02, // верхний кончик
+    );
+    leaf.cubicTo(
+      w * 1.05, h * 0.20,
+      w * 1.05, h * 0.75,
+      w * 0.50, h * 0.98,
+    );
+    leaf.close();
+    canvas.drawPath(leaf, fillPaint);
+
+    // Центральная жилка
+    final veinPaint = Paint()
+      ..color = const Color(0xFF2D6A4F).withOpacity(0.35)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = w * 0.07
+      ..strokeCap = StrokeCap.round;
+
+    final vein = Path();
+    vein.moveTo(w * 0.50, h * 0.95);
+    vein.quadraticBezierTo(w * 0.50, h * 0.50, w * 0.50, h * 0.05);
+    canvas.drawPath(vein, veinPaint);
+  }
+
+  @override
+  bool shouldRepaint(_LeafPainter old) => false;
 }
 
 const List<Map<String, String>> _staticPosts = [
