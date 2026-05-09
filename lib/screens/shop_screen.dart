@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ShopScreen extends StatelessWidget {
   const ShopScreen({super.key});
@@ -25,7 +26,7 @@ class ShopScreen extends StatelessWidget {
           crossAxisCount: 2,
           crossAxisSpacing: 12,
           mainAxisSpacing: 12,
-          childAspectRatio: 0.72,
+          childAspectRatio: 0.68,
         ),
         itemCount: _products.length,
         itemBuilder: (context, index) => _ProductCard(product: _products[index]),
@@ -39,8 +40,21 @@ class _ProductCard extends StatelessWidget {
 
   const _ProductCard({required this.product});
 
+  Future<void> _buy(BuildContext context) async {
+    final url = Uri.parse(product['url'] as String);
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Не удалось открыть ссылку')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final color = product['color'] as Color;
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -59,14 +73,20 @@ class _ProductCard extends StatelessWidget {
           Expanded(
             child: Container(
               decoration: BoxDecoration(
-                color: (product['color'] as Color).withOpacity(0.12),
+                color: color.withOpacity(0.12),
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
               ),
               child: Center(
-                child: Icon(
-                  Icons.menu_book,
-                  size: 52,
-                  color: product['color'] as Color,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.menu_book, size: 48, color: color),
+                    const SizedBox(height: 8),
+                    Text(
+                      product['emoji'] as String,
+                      style: const TextStyle(fontSize: 28),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -119,9 +139,9 @@ class _ProductCard extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () => _buy(context),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: product['color'] as Color,
+                      backgroundColor: color,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       shape: RoundedRectangleBorder(
@@ -153,6 +173,8 @@ final List<Map<String, dynamic>> _products = [
     'price': '490 ₽',
     'oldPrice': '2 490 ₽',
     'color': const Color(0xFF2D6A4F),
+    'emoji': '🌿',
+    'url': 'https://t.me/ygeia', // замени на реальную ссылку
   },
   {
     'title': 'Ритм',
@@ -160,6 +182,8 @@ final List<Map<String, dynamic>> _products = [
     'price': '590 ₽',
     'oldPrice': '2 990 ₽',
     'color': const Color(0xFFE07A5F),
+    'emoji': '🏛️',
+    'url': 'https://t.me/ygeia',
   },
   {
     'title': 'Дзен',
@@ -167,6 +191,8 @@ final List<Map<String, dynamic>> _products = [
     'price': '590 ₽',
     'oldPrice': '2 990 ₽',
     'color': const Color(0xFF8D9EAD),
+    'emoji': '☯️',
+    'url': 'https://t.me/ygeia',
   },
   {
     'title': 'Калибр',
@@ -174,5 +200,7 @@ final List<Map<String, dynamic>> _products = [
     'price': '690 ₽',
     'oldPrice': '3 490 ₽',
     'color': const Color(0xFF3D405B),
+    'emoji': '💎',
+    'url': 'https://t.me/ygeia',
   },
 ];

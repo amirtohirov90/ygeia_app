@@ -1,23 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 import 'screens/feed_screen.dart';
 import 'screens/lessons_screen.dart';
 import 'screens/club_screen.dart';
 import 'screens/shop_screen.dart';
 import 'screens/profile_screen.dart';
+import 'screens/onboarding_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const YgeiaApp());
+  final prefs = await SharedPreferences.getInstance();
+  final onboardingDone = prefs.getBool('onboarding_done') ?? false;
+  runApp(YgeiaApp(showOnboarding: !onboardingDone));
 }
 
 class YgeiaApp extends StatelessWidget {
-  const YgeiaApp({super.key});
+  final bool showOnboarding;
+  const YgeiaApp({super.key, required this.showOnboarding});
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +37,20 @@ class YgeiaApp extends StatelessWidget {
         textTheme: GoogleFonts.interTextTheme(),
         useMaterial3: true,
       ),
-      home: const MainScreen(),
+      home: showOnboarding ? _OnboardingWrapper() : const MainScreen(),
+    );
+  }
+}
+
+class _OnboardingWrapper extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return OnboardingScreen(
+      onDone: () {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const MainScreen()),
+        );
+      },
     );
   }
 }
@@ -58,7 +76,10 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _screens[_currentIndex],
+      body: IndexedStack(
+        index: _currentIndex,
+        children: _screens,
+      ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
         onDestinationSelected: (index) => setState(() => _currentIndex = index),
