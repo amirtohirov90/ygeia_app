@@ -2,10 +2,9 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-// Замени на свои реальные ссылки для оплаты
-const _monthlyUrl = 'https://t.me/ygeia'; // ссылка на оплату месяца
-const _yearlyUrl = 'https://t.me/ygeia';  // ссылка на оплату года
+const _siteUrl = 'https://ygeia.ru';
 
 class ClubScreen extends StatefulWidget {
   const ClubScreen({super.key});
@@ -18,8 +17,12 @@ class _ClubScreenState extends State<ClubScreen> {
   bool _yearSelected = true;
 
   Future<void> _openPayment() async {
-    final url = Uri.parse(_yearSelected ? _yearlyUrl : _monthlyUrl);
-    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+    final user = FirebaseAuth.instance.currentUser;
+    final uid = user?.uid ?? '';
+    final email = Uri.encodeComponent(user?.email ?? '');
+    final plan = _yearSelected ? 'club_year' : 'club_month';
+    final uri = Uri.parse('$_siteUrl/pay?plan=$plan&uid=$uid&email=$email');
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Не удалось открыть ссылку')),

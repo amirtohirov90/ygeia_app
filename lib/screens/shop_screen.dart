@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+const _shopSiteUrl = 'https://ygeia.ru';
 
 class ShopScreen extends StatelessWidget {
   const ShopScreen({super.key});
@@ -41,8 +44,12 @@ class _ProductCard extends StatelessWidget {
   const _ProductCard({required this.product});
 
   Future<void> _buy(BuildContext context) async {
-    final url = Uri.parse(product['url'] as String);
-    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+    final user = FirebaseAuth.instance.currentUser;
+    final uid = user?.uid ?? '';
+    final email = Uri.encodeComponent(user?.email ?? '');
+    final planId = product['planId'] as String;
+    final uri = Uri.parse('$_shopSiteUrl/pay?plan=$planId&uid=$uid&email=$email');
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Не удалось открыть ссылку')),
@@ -170,37 +177,37 @@ final List<Map<String, dynamic>> _products = [
   {
     'title': 'Базис',
     'subtitle': 'ЗОЖ и привычки',
-    'price': '490 ₽',
+    'price': '790 ₽',
     'oldPrice': '2 490 ₽',
     'color': const Color(0xFF2D6A4F),
     'emoji': '🌿',
-    'url': 'https://t.me/ygeia', // замени на реальную ссылку
+    'planId': 'book_basis',
   },
   {
     'title': 'Ритм',
     'subtitle': 'Греческая эстетика',
-    'price': '590 ₽',
+    'price': '790 ₽',
     'oldPrice': '2 990 ₽',
     'color': const Color(0xFFE07A5F),
     'emoji': '🏛️',
-    'url': 'https://t.me/ygeia',
+    'planId': 'book_rhythm',
   },
   {
     'title': 'Дзен',
     'subtitle': 'Азиатская философия',
-    'price': '590 ₽',
+    'price': '790 ₽',
     'oldPrice': '2 990 ₽',
     'color': const Color(0xFF8D9EAD),
     'emoji': '☯️',
-    'url': 'https://t.me/ygeia',
+    'planId': 'book_rhythm', // замени на book_zen когда добавишь в plans.js
   },
   {
     'title': 'Калибр',
     'subtitle': 'Деньги и качество',
-    'price': '690 ₽',
+    'price': '790 ₽',
     'oldPrice': '3 490 ₽',
     'color': const Color(0xFF3D405B),
     'emoji': '💎',
-    'url': 'https://t.me/ygeia',
+    'planId': 'book_rhythm', // замени на book_calibr когда добавишь в plans.js
   },
 ];
