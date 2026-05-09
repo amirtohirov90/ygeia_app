@@ -18,7 +18,7 @@ class LessonDetailScreen extends StatelessWidget {
     final lessons = _lessonData[category] ?? [];
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F6F2),
+      backgroundColor: const Color(0xFFF0E8DA),
       appBar: AppBar(
         backgroundColor: color,
         iconTheme: const IconThemeData(color: Colors.white),
@@ -79,7 +79,7 @@ class _LessonCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color(0xFFFAF4EC),
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
@@ -144,7 +144,7 @@ class _LessonContentScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F6F2),
+      backgroundColor: const Color(0xFFF0E8DA),
       appBar: AppBar(
         backgroundColor: color,
         iconTheme: const IconThemeData(color: Colors.white),

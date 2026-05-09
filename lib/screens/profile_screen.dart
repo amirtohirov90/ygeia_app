@@ -17,7 +17,7 @@ class ProfileScreen extends StatelessWidget {
         final user = snapshot.data;
 
         return Scaffold(
-          backgroundColor: const Color(0xFFF8F6F2),
+          backgroundColor: const Color(0xFFF0E8DA),
           appBar: AppBar(
             backgroundColor: const Color(0xFF2D6A4F),
             title: Text(
@@ -148,7 +148,7 @@ class _MenuItem extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color(0xFFFAF4EC),
         borderRadius: BorderRadius.circular(12),
       ),
       child: ListTile(

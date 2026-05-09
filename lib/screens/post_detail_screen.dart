@@ -115,7 +115,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   Widget build(BuildContext context) {
     final post = widget.post;
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F6F2),
+      backgroundColor: const Color(0xFFF0E8DA),
       body: Column(
         children: [
           Expanded(
@@ -269,7 +269,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                         borderSide: BorderSide.none,
                       ),
                       filled: true,
-                      fillColor: const Color(0xFFF8F6F2),
+                      fillColor: const Color(0xFFF0E8DA),
                       contentPadding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 10),
                     ),
@@ -456,7 +456,7 @@ class _CommentTile extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: const Color(0xFFFAF4EC),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(

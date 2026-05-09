@@ -9,7 +9,7 @@ class LessonsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F6F2),
+      backgroundColor: const Color(0xFFF0E8DA),
       appBar: AppBar(
         backgroundColor: const Color(0xFF2D6A4F),
         title: Text(
@@ -148,7 +148,7 @@ class LessonsScreen extends StatelessWidget {
   void _openPremium(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFFAF4EC),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -248,7 +248,7 @@ class _CategoryCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: const Color(0xFFFAF4EC),
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(

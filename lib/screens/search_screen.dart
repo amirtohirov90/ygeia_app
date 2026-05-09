@@ -110,7 +110,7 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F6F2),
+      backgroundColor: const Color(0xFFF0E8DA),
       appBar: AppBar(
         backgroundColor: const Color(0xFF2D6A4F),
         iconTheme: const IconThemeData(color: Colors.white),
@@ -228,7 +228,7 @@ class _SearchScreenState extends State<SearchScreen> {
           margin: const EdgeInsets.only(bottom: 8),
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: const Color(0xFFFAF4EC),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Column(
@@ -280,7 +280,7 @@ class _SearchScreenState extends State<SearchScreen> {
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: const Color(0xFFFAF4EC),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
@@ -326,7 +326,7 @@ class _SearchScreenState extends State<SearchScreen> {
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: const Color(0xFFFAF4EC),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
@@ -371,7 +371,7 @@ class _SearchScreenState extends State<SearchScreen> {
               margin: const EdgeInsets.only(bottom: 8),
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: const Color(0xFFFAF4EC),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(

@@ -42,16 +42,31 @@ class _FeedScreenState extends State<FeedScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F6F2),
+      backgroundColor: const Color(0xFFF0E8DA),
       appBar: AppBar(
         backgroundColor: const Color(0xFF2D6A4F),
-        title: Text(
-          'ygeia',
-          style: GoogleFonts.playfairDisplay(
-            color: Colors.white,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.eco, size: 18, color: Colors.white),
+            ),
+            const SizedBox(width: 10),
+            Text(
+              'ygeia',
+              style: GoogleFonts.playfairDisplay(
+                color: Colors.white,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
         ),
         actions: [
           IconButton(
@@ -160,7 +175,7 @@ class PostCard extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: const Color(0xFFFAF4EC),
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(

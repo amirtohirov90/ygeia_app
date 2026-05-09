@@ -113,7 +113,7 @@ class _MainScreenState extends State<MainScreen> {
         selectedIndex: _currentIndex,
         onDestinationSelected: (index) =>
             setState(() => _currentIndex = index),
-        backgroundColor: Colors.white,
+        backgroundColor: const Color(0xFFFAF4EC),
         indicatorColor: const Color(0xFF2D6A4F).withOpacity(0.15),
         destinations: const [
           NavigationDestination(

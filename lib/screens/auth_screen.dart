@@ -53,7 +53,7 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F6F2),
+      backgroundColor: const Color(0xFFF0E8DA),
       appBar: AppBar(
         backgroundColor: const Color(0xFF2D6A4F),
         title: Text(
