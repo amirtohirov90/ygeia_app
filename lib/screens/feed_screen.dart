@@ -46,25 +46,22 @@ class _FeedScreenState extends State<FeedScreen> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF2D6A4F),
         centerTitle: true,
-        title: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              width: 22,
-              height: 22,
-              child: CustomPaint(painter: _LeafPainter()),
-            ),
-            const SizedBox(width: 9),
-            Text(
-              'ygeia',
-              style: GoogleFonts.playfairDisplay(
-                color: Colors.white,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 0.5,
-              ),
-            ),
-          ],
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 12),
+          child: SizedBox(
+            width: 26,
+            height: 26,
+            child: CustomPaint(painter: _LeafPainter()),
+          ),
+        ),
+        title: Text(
+          'ygeia',
+          style: GoogleFonts.playfairDisplay(
+            color: Colors.white,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 0.5,
+          ),
         ),
         actions: [
           IconButton(
