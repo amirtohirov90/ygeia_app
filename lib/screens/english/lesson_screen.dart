@@ -389,7 +389,10 @@ class _LessonScreenState extends State<LessonScreen>
               onTap: _isAnswered
                   ? null
                   : () => setState(() {
-                        _selectedWords.add(_bankWords.remove(_bankWords.indexOf(word)));
+                        final idx = _bankWords.indexOf(word);
+                        if (idx != -1) {
+                          _selectedWords.add(_bankWords.removeAt(idx));
+                        }
                       }),
               child: Container(
                 padding:
