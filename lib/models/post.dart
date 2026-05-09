@@ -8,6 +8,7 @@ class Post {
   final String category;
   final String? imageUrl;
   final int likes;
+  final List<String> likedByEmails;
   final DateTime? createdAt;
 
   Post({
@@ -18,6 +19,7 @@ class Post {
     this.category = '',
     this.imageUrl,
     this.likes = 0,
+    this.likedByEmails = const [],
     this.createdAt,
   });
 
@@ -31,6 +33,7 @@ class Post {
       category: data['category'] ?? '',
       imageUrl: data['imageUrl'],
       likes: (data['likes'] ?? 0) as int,
+      likedByEmails: List<String>.from(data['likedByEmails'] ?? []),
       createdAt: (data['createdAt'] as Timestamp?)?.toDate(),
     );
   }

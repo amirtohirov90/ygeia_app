@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -131,6 +132,20 @@ class _ClubScreenState extends State<ClubScreen> {
                 ),
               ),
             ),
+            const SizedBox(height: 32),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Эксклюзивный контент клуба',
+                style: GoogleFonts.playfairDisplay(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: const Color(0xFF1A1A1A),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            ..._premiumPreviews.map((p) => _BlurredPreviewCard(text: p)),
             const SizedBox(height: 12),
             Text(
               'Безопасная оплата. Отменить можно в любой момент.',
@@ -139,6 +154,115 @@ class _ClubScreenState extends State<ClubScreen> {
                 color: const Color(0xFF999999),
               ),
               textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+const List<Map<String, String>> _premiumPreviews = [
+  {
+    'title': 'Медитация Нидра: глубокий отдых за 20 минут',
+    'body': 'Йога-нидра — состояние между сном и бодрствованием. За 20 минут практики тело получает отдых, равный 4 часам сна. Сегодня в эфире разбираем технику шаг за шагом...',
+  },
+  {
+    'title': 'Разбор питания участницы клуба',
+    'body': 'Каждую неделю мы разбираем рацион одной из участниц. Что убрать, что добавить, как выстроить питание под свой ритм жизни. В этом выпуске — Анна, 34 года...',
+  },
+  {
+    'title': 'Живой эфир: вопросы и ответы',
+    'body': 'Запись эфира от 5 мая. Обсуждаем: как справляться с тягой к сладкому, почему йога помогает с тревогой, и как выстроить утреннюю рутину...',
+  },
+];
+
+class _BlurredPreviewCard extends StatelessWidget {
+  final Map<String, String> text;
+  const _BlurredPreviewCard({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(14),
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    text['title']!,
+                    style: GoogleFonts.playfairDisplay(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xFF1A1A1A),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    text['body']!,
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      color: const Color(0xFF666666),
+                      height: 1.5,
+                    ),
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            Positioned.fill(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(14),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+                  child: Container(
+                    color: Colors.white.withOpacity(0.6),
+                    child: Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF2D6A4F).withOpacity(0.15),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(Icons.lock,
+                                size: 20, color: Color(0xFF2D6A4F)),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            'Только для участников',
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF2D6A4F),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ),
           ],
         ),

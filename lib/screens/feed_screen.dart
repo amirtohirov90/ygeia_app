@@ -3,7 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/post.dart';
 import '../services/firestore_service.dart';
+import '../widgets/highlighted_text.dart';
 import 'post_detail_screen.dart';
+import 'search_screen.dart';
 
 class FeedScreen extends StatefulWidget {
   const FeedScreen({super.key});
@@ -14,11 +16,8 @@ class FeedScreen extends StatefulWidget {
 
 class _FeedScreenState extends State<FeedScreen> {
   final FirestoreService _service = FirestoreService();
-  final TextEditingController _searchController = TextEditingController();
-  String _searchQuery = '';
   bool _showFavorites = false;
   Set<String> _favoriteIds = {};
-  bool _searchVisible = false;
 
   @override
   void initState() {
@@ -29,32 +28,15 @@ class _FeedScreenState extends State<FeedScreen> {
   Future<void> _loadFavorites() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _favoriteIds =
-          (prefs.getStringList('favorite_posts') ?? []).toSet();
+      _favoriteIds = (prefs.getStringList('favorite_posts') ?? []).toSet();
     });
   }
 
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
   List<Post> _filter(List<Post> posts) {
-    var result = posts;
     if (_showFavorites) {
-      result = result.where((p) => _favoriteIds.contains(p.id)).toList();
+      return posts.where((p) => _favoriteIds.contains(p.id)).toList();
     }
-    if (_searchQuery.isNotEmpty) {
-      final q = _searchQuery.toLowerCase();
-      result = result
-          .where((p) =>
-              p.title.toLowerCase().contains(q) ||
-              p.body.toLowerCase().contains(q) ||
-              p.category.toLowerCase().contains(q))
-          .toList();
-    }
-    return result;
+    return posts;
   }
 
   @override
@@ -63,43 +45,21 @@ class _FeedScreenState extends State<FeedScreen> {
       backgroundColor: const Color(0xFFF8F6F2),
       appBar: AppBar(
         backgroundColor: const Color(0xFF2D6A4F),
-        title: _searchVisible
-            ? TextField(
-                controller: _searchController,
-                autofocus: true,
-                style: GoogleFonts.inter(color: Colors.white),
-                cursorColor: Colors.white,
-                decoration: InputDecoration(
-                  hintText: 'Поиск...',
-                  hintStyle: GoogleFonts.inter(
-                      color: Colors.white.withOpacity(0.6)),
-                  border: InputBorder.none,
-                ),
-                onChanged: (v) => setState(() => _searchQuery = v),
-              )
-            : Text(
-                'ygeia',
-                style: GoogleFonts.playfairDisplay(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+        title: Text(
+          'ygeia',
+          style: GoogleFonts.playfairDisplay(
+            color: Colors.white,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         actions: [
           IconButton(
-            icon: Icon(
-              _searchVisible ? Icons.close : Icons.search,
-              color: Colors.white,
+            icon: const Icon(Icons.search, color: Colors.white),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const SearchScreen()),
             ),
-            onPressed: () {
-              setState(() {
-                _searchVisible = !_searchVisible;
-                if (!_searchVisible) {
-                  _searchQuery = '';
-                  _searchController.clear();
-                }
-              });
-            },
           ),
           IconButton(
             icon: Icon(
@@ -134,21 +94,15 @@ class _FeedScreenState extends State<FeedScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
-                    _showFavorites
-                        ? Icons.bookmark_border
-                        : Icons.search_off,
+                    _showFavorites ? Icons.bookmark_border : Icons.article_outlined,
                     size: 56,
                     color: const Color(0xFFCCCCCC),
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    _showFavorites
-                        ? 'Нет сохранённых постов'
-                        : 'Ничего не найдено',
+                    _showFavorites ? 'Нет сохранённых постов' : 'Нет публикаций',
                     style: GoogleFonts.inter(
-                      fontSize: 15,
-                      color: const Color(0xFF999999),
-                    ),
+                        fontSize: 15, color: const Color(0xFF999999)),
                   ),
                 ],
               ),
@@ -157,12 +111,13 @@ class _FeedScreenState extends State<FeedScreen> {
 
           return RefreshIndicator(
             color: const Color(0xFF2D6A4F),
-            onRefresh: () async => setState(() {}),
+            onRefresh: () async => _loadFavorites(),
             child: ListView.builder(
               padding: const EdgeInsets.all(16),
               itemCount: posts.length,
               itemBuilder: (context, index) => PostCard(
                 post: posts[index],
+                query: '',
                 onFavoriteChanged: _loadFavorites,
               ),
             ),
@@ -175,9 +130,11 @@ class _FeedScreenState extends State<FeedScreen> {
 
 class PostCard extends StatelessWidget {
   final Post post;
+  final String query;
   final VoidCallback? onFavoriteChanged;
 
-  const PostCard({super.key, required this.post, this.onFavoriteChanged});
+  const PostCard(
+      {super.key, required this.post, required this.query, this.onFavoriteChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -186,23 +143,17 @@ class PostCard extends StatelessWidget {
         Navigator.push(
           context,
           PageRouteBuilder(
-            pageBuilder: (_, animation, __) =>
-                PostDetailScreen(post: post),
-            transitionsBuilder: (_, animation, __, child) {
-              return FadeTransition(
-                opacity: animation,
-                child: SlideTransition(
-                  position: Tween<Offset>(
-                    begin: const Offset(0, 0.04),
-                    end: Offset.zero,
-                  ).animate(
-                    CurvedAnimation(
-                        parent: animation, curve: Curves.easeOut),
-                  ),
-                  child: child,
-                ),
-              );
-            },
+            pageBuilder: (_, animation, __) => PostDetailScreen(post: post),
+            transitionsBuilder: (_, animation, __, child) => FadeTransition(
+              opacity: animation,
+              child: SlideTransition(
+                position: Tween<Offset>(
+                        begin: const Offset(0, 0.04), end: Offset.zero)
+                    .animate(CurvedAnimation(
+                        parent: animation, curve: Curves.easeOut)),
+                child: child,
+              ),
+            ),
           ),
         ).then((_) => onFavoriteChanged?.call());
       },
@@ -240,9 +191,8 @@ class PostCard extends StatelessWidget {
                                       .withOpacity(0.08),
                                   child: const Center(
                                     child: CircularProgressIndicator(
-                                      color: Color(0xFF2D6A4F),
-                                      strokeWidth: 2,
-                                    ),
+                                        color: Color(0xFF2D6A4F),
+                                        strokeWidth: 2),
                                   ),
                                 ),
                       errorBuilder: (_, __, ___) => _placeholderImage(),
@@ -260,35 +210,33 @@ class PostCard extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
-                        color:
-                            const Color(0xFF2D6A4F).withOpacity(0.1),
+                        color: const Color(0xFF2D6A4F).withOpacity(0.1),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
                         post.category,
                         style: GoogleFonts.inter(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xFF2D6A4F),
-                        ),
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFF2D6A4F)),
                       ),
                     ),
-                  Text(
-                    post.title,
-                    style: GoogleFonts.playfairDisplay(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: const Color(0xFF1A1A1A),
-                    ),
+                  HighlightedText(
+                    text: post.title,
+                    query: query,
+                    baseStyle: GoogleFonts.playfairDisplay(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: const Color(0xFF1A1A1A)),
                   ),
                   const SizedBox(height: 8),
-                  Text(
-                    post.body,
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      color: const Color(0xFF666666),
-                      height: 1.6,
-                    ),
+                  HighlightedText(
+                    text: post.body,
+                    query: query,
+                    baseStyle: GoogleFonts.inter(
+                        fontSize: 14,
+                        color: const Color(0xFF666666),
+                        height: 1.6),
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -296,37 +244,26 @@ class PostCard extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        post.date,
-                        style: GoogleFonts.inter(
-                          fontSize: 12,
-                          color: const Color(0xFF999999),
-                        ),
-                      ),
+                      Text(post.date,
+                          style: GoogleFonts.inter(
+                              fontSize: 12, color: const Color(0xFF999999))),
                       Row(
                         children: [
                           const Icon(Icons.favorite_border,
-                              size: 15,
-                              color: Color(0xFF999999)),
+                              size: 15, color: Color(0xFF999999)),
                           if (post.likes > 0) ...[
                             const SizedBox(width: 4),
-                            Text(
-                              '${post.likes}',
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
-                                color: const Color(0xFF999999),
-                              ),
-                            ),
+                            Text('${post.likes}',
+                                style: GoogleFonts.inter(
+                                    fontSize: 12,
+                                    color: const Color(0xFF999999))),
                           ],
                           const SizedBox(width: 12),
-                          Text(
-                            'Читать →',
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
-                              color: const Color(0xFF2D6A4F),
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
+                          Text('Читать →',
+                              style: GoogleFonts.inter(
+                                  fontSize: 12,
+                                  color: const Color(0xFF2D6A4F),
+                                  fontWeight: FontWeight.w600)),
                         ],
                       ),
                     ],
@@ -346,37 +283,33 @@ Widget _placeholderImage() {
     height: 200,
     width: double.infinity,
     color: const Color(0xFF2D6A4F).withOpacity(0.08),
-    child: const Icon(Icons.eco_outlined,
-        size: 60, color: Color(0xFF2D6A4F)),
+    child:
+        const Icon(Icons.eco_outlined, size: 60, color: Color(0xFF2D6A4F)),
   );
 }
 
 const List<Map<String, String>> _staticPosts = [
   {
     'title': 'Утренняя йога: 5 асан для начала дня',
-    'body':
-        'Начни утро с этих простых асан — они разбудят тело и настроят ум на продуктивный день. Всего 15 минут изменят твоё утро.',
+    'body': 'Начни утро с этих простых асан — они разбудят тело и настроят ум на продуктивный день. Всего 15 минут изменят твоё утро.',
     'date': '9 мая 2026',
     'category': 'Йога',
   },
   {
     'title': 'Почему сахар по утрам — это плохая идея',
-    'body':
-        'Резкий скачок глюкозы утром запускает цикл усталости и тяги к сладкому. Рассказываем что есть вместо этого.',
+    'body': 'Резкий скачок глюкозы утром запускает цикл усталости и тяги к сладкому. Рассказываем что есть вместо этого.',
     'date': '8 мая 2026',
     'category': 'Питание',
   },
   {
     'title': '3 привычки для здоровья без усилий',
-    'body':
-        'Микро-привычки работают лучше жёстких систем. Вот три изменения, которые не потребуют силы воли.',
+    'body': 'Микро-привычки работают лучше жёстких систем. Вот три изменения, которые не потребуют силы воли.',
     'date': '7 мая 2026',
     'category': 'Привычки',
   },
   {
     'title': 'Как питаться, чтобы было больше энергии',
-    'body':
-        'Усталость после обеда — не норма. Разбираем что и когда есть, чтобы оставаться в ресурсе весь день.',
+    'body': 'Усталость после обеда — не норма. Разбираем что и когда есть, чтобы оставаться в ресурсе весь день.',
     'date': '6 мая 2026',
     'category': 'Питание',
   },
