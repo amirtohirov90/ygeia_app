@@ -7,6 +7,7 @@ class Post {
   final String date;
   final String category;
   final String? imageUrl;
+  final int likes;
   final DateTime? createdAt;
 
   Post({
@@ -16,6 +17,7 @@ class Post {
     required this.date,
     this.category = '',
     this.imageUrl,
+    this.likes = 0,
     this.createdAt,
   });
 
@@ -28,6 +30,7 @@ class Post {
       date: data['date'] ?? '',
       category: data['category'] ?? '',
       imageUrl: data['imageUrl'],
+      likes: (data['likes'] ?? 0) as int,
       createdAt: (data['createdAt'] as Timestamp?)?.toDate(),
     );
   }

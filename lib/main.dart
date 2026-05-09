@@ -9,20 +9,18 @@ import 'screens/club_screen.dart';
 import 'screens/shop_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/onboarding_screen.dart';
+import 'screens/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  final prefs = await SharedPreferences.getInstance();
-  final onboardingDone = prefs.getBool('onboarding_done') ?? false;
-  runApp(YgeiaApp(showOnboarding: !onboardingDone));
+  runApp(const YgeiaApp());
 }
 
 class YgeiaApp extends StatelessWidget {
-  final bool showOnboarding;
-  const YgeiaApp({super.key, required this.showOnboarding});
+  const YgeiaApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -37,21 +35,52 @@ class YgeiaApp extends StatelessWidget {
         textTheme: GoogleFonts.interTextTheme(),
         useMaterial3: true,
       ),
-      home: showOnboarding ? _OnboardingWrapper() : const MainScreen(),
+      home: const _AppEntry(),
     );
   }
 }
 
-class _OnboardingWrapper extends StatelessWidget {
+class _AppEntry extends StatefulWidget {
+  const _AppEntry();
+
+  @override
+  State<_AppEntry> createState() => _AppEntryState();
+}
+
+class _AppEntryState extends State<_AppEntry> {
+  bool _splashDone = false;
+  bool _onboardingDone = false;
+  bool _prefsLoaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPrefs();
+  }
+
+  Future<void> _loadPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _onboardingDone = prefs.getBool('onboarding_done') ?? false;
+      _prefsLoaded = true;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return OnboardingScreen(
-      onDone: () {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const MainScreen()),
-        );
-      },
-    );
+    if (!_prefsLoaded || !_splashDone) {
+      return SplashScreen(onDone: () {
+        if (mounted) setState(() => _splashDone = true);
+      });
+    }
+    if (!_onboardingDone) {
+      return OnboardingScreen(
+        onDone: () {
+          if (mounted) setState(() => _onboardingDone = true);
+        },
+      );
+    }
+    return const MainScreen();
   }
 }
 
@@ -82,7 +111,8 @@ class _MainScreenState extends State<MainScreen> {
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
-        onDestinationSelected: (index) => setState(() => _currentIndex = index),
+        onDestinationSelected: (index) =>
+            setState(() => _currentIndex = index),
         backgroundColor: Colors.white,
         indicatorColor: const Color(0xFF2D6A4F).withOpacity(0.15),
         destinations: const [
@@ -93,7 +123,8 @@ class _MainScreenState extends State<MainScreen> {
           ),
           NavigationDestination(
             icon: Icon(Icons.menu_book_outlined),
-            selectedIcon: Icon(Icons.menu_book, color: Color(0xFF2D6A4F)),
+            selectedIcon:
+                Icon(Icons.menu_book, color: Color(0xFF2D6A4F)),
             label: 'Уроки',
           ),
           NavigationDestination(
@@ -103,12 +134,14 @@ class _MainScreenState extends State<MainScreen> {
           ),
           NavigationDestination(
             icon: Icon(Icons.shopping_bag_outlined),
-            selectedIcon: Icon(Icons.shopping_bag, color: Color(0xFF2D6A4F)),
+            selectedIcon:
+                Icon(Icons.shopping_bag, color: Color(0xFF2D6A4F)),
             label: 'Магазин',
           ),
           NavigationDestination(
             icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person, color: Color(0xFF2D6A4F)),
+            selectedIcon:
+                Icon(Icons.person, color: Color(0xFF2D6A4F)),
             label: 'Профиль',
           ),
         ],
