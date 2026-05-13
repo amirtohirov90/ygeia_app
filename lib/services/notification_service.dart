@@ -98,7 +98,7 @@ class NotificationService {
     );
   }
 
-  /// 20:00 ежедневно — напоминание об английском (серия)
+  /// 20:00 ежедневно — мягкое вечернее напоминание
   static Future<void> scheduleStreakReminder() async {
     final now = tz.TZDateTime.now(tz.local);
     var target =
@@ -107,10 +107,19 @@ class NotificationService {
       target = target.add(const Duration(days: 1));
     }
 
+    final messages = [
+      'Вечер — время замедлиться. Как прошёл твой день? 🌙',
+      'Сделай один маленький шаг для себя сегодня вечером 🌿',
+      'Позаботься о себе — ты заслуживаешь этого ✨',
+      'Тихий вечер — лучшее время для минуты тишины 🕯️',
+      'Один момент для себя — это уже забота о себе 💚',
+    ];
+    final msg = messages[now.day % messages.length];
+
     await _plugin.zonedSchedule(
       _eveningId,
-      '🔥 Не теряй серию!',
-      'Ещё не учила английский сегодня. Займёт всего 2 минуты!',
+      'ygeia',
+      msg,
       target,
       const NotificationDetails(
         android: AndroidNotificationDetails(

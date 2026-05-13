@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lucide_icons/lucide_icons.dart';
+import '../config/feature_flags.dart';
+import '../theme/colors.dart';
+import '../theme/typography.dart';
 import 'lesson_detail_screen.dart';
-import 'club_screen.dart';
 import 'english/english_home_screen.dart';
 
 class LessonsScreen extends StatelessWidget {
@@ -10,101 +13,101 @@ class LessonsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF0E8DA),
+      backgroundColor: YgeiaColors.bgBase,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF2D6A4F),
-        title: Text(
-          'Уроки',
-          style: GoogleFonts.playfairDisplay(
-            color: Colors.white,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        title: Text('Уроки', style: YgeiaTypography.h2),
+        backgroundColor: YgeiaColors.bgBase,
+        elevation: 0,
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // ── English learning hero card ──────────────────────────
-          GestureDetector(
-            onTap: () => Navigator.push(context,
-                MaterialPageRoute(builder: (_) => const EnglishHomeScreen())),
-            child: Container(
-              margin: const EdgeInsets.only(bottom: 16),
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF1565C0), Color(0xFF1976D2)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(18),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF1565C0).withOpacity(0.3),
-                    blurRadius: 16,
-                    offset: const Offset(0, 6),
-                  ),
-                ],
+          // ── English module (hidden until kEnglishEnabled) ──────────
+          if (FeatureFlags.kEnglishEnabled)
+            GestureDetector(
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => const EnglishHomeScreen()),
               ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: const Center(
-                      child: Text('🇬🇧', style: TextStyle(fontSize: 32)),
-                    ),
+              child: Container(
+                margin: const EdgeInsets.only(bottom: 16),
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF1565C0), Color(0xFF1976D2)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Английский язык',
-                            style: GoogleFonts.playfairDisplay(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white)),
-                        const SizedBox(height: 4),
-                        Text('5 уровней · 20 уроков · 120 заданий',
-                            style: GoogleFonts.inter(
-                                fontSize: 12,
-                                color: Colors.white.withOpacity(0.75))),
-                        const SizedBox(height: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text('Начать обучение →',
-                              style: GoogleFonts.inter(
-                                  fontSize: 12,
+                  borderRadius: BorderRadius.circular(18),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF1565C0).withOpacity(0.3),
+                      blurRadius: 16,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: const Center(
+                        child: Icon(Icons.language,
+                            color: Colors.white, size: 32),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Английский язык',
+                              style: GoogleFonts.fraunces(
+                                  fontSize: 20,
                                   fontWeight: FontWeight.w600,
                                   color: Colors.white)),
-                        ),
-                      ],
+                          const SizedBox(height: 4),
+                          Text('5 уровней · 20 уроков',
+                              style: GoogleFonts.inter(
+                                  fontSize: 12,
+                                  color: Colors.white.withOpacity(0.75))),
+                          const SizedBox(height: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text('Начать →',
+                                style: GoogleFonts.inter(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white)),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-          // ────────────────────────────────────────────────────────
+
+          // ── Wellness categories ────────────────────────────────────
           _CategoryCard(
             title: 'Йога',
             subtitle: '5 уроков',
             icon: Icons.self_improvement,
-            color: const Color(0xFF2D6A4F),
+            color: YgeiaColors.accent,
             isPremium: false,
-            onTap: () => _open(context, 'Йога', const Color(0xFF2D6A4F),
-                Icons.self_improvement),
+            onTap: () =>
+                _open(context, 'Йога', YgeiaColors.accent, Icons.self_improvement),
           ),
           const SizedBox(height: 12),
           _CategoryCard(
@@ -113,8 +116,8 @@ class LessonsScreen extends StatelessWidget {
             icon: Icons.restaurant_outlined,
             color: const Color(0xFF52B788),
             isPremium: false,
-            onTap: () => _open(context, 'Питание', const Color(0xFF52B788),
-                Icons.restaurant_outlined),
+            onTap: () => _open(context, 'Питание',
+                const Color(0xFF52B788), Icons.restaurant_outlined),
           ),
           const SizedBox(height: 12),
           _CategoryCard(
@@ -123,84 +126,78 @@ class LessonsScreen extends StatelessWidget {
             icon: Icons.loop,
             color: const Color(0xFF74C69D),
             isPremium: false,
-            onTap: () => _open(context, 'Привычки', const Color(0xFF74C69D),
-                Icons.loop),
+            onTap: () => _open(
+                context, 'Привычки', const Color(0xFF74C69D), Icons.loop),
           ),
           const SizedBox(height: 12),
           _CategoryCard(
             title: 'Медитация',
-            subtitle: '4 урока • Клуб',
+            subtitle: '4 урока · Клуб',
             icon: Icons.spa_outlined,
-            color: const Color(0xFF40916C),
+            color: YgeiaColors.accent,
             isPremium: true,
             onTap: () => _openPremium(context),
           ),
           const SizedBox(height: 12),
           _CategoryCard(
             title: 'Сон и восстановление',
-            subtitle: '4 урока • Клуб',
+            subtitle: '4 урока · Клуб',
             icon: Icons.nightlight_outlined,
             color: const Color(0xFF1B4332),
             isPremium: true,
             onTap: () => _openPremium(context),
           ),
           const SizedBox(height: 16),
+
+          // ── Club CTA ───────────────────────────────────────────────
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: const Color(0xFF2D6A4F).withOpacity(0.08),
+              color: YgeiaColors.accentSoft,
               borderRadius: BorderRadius.circular(14),
               border: Border.all(
-                color: const Color(0xFF2D6A4F).withOpacity(0.2),
+                color: YgeiaColors.accent.withOpacity(0.2),
               ),
             ),
             child: Row(
               children: [
-                const Icon(Icons.stars, color: Color(0xFF2D6A4F), size: 28),
+                const Icon(LucideIcons.lock, color: YgeiaColors.accent, size: 22),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Открой все уроки',
-                        style: GoogleFonts.inter(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: const Color(0xFF1A1A1A),
-                        ),
-                      ),
-                      Text(
-                        'Вступи в закрытый клуб ygeia',
-                        style: GoogleFonts.inter(
-                          fontSize: 12,
-                          color: const Color(0xFF666666),
-                        ),
-                      ),
+                      Text('Открой все уроки',
+                          style: GoogleFonts.inter(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: YgeiaColors.textPrimary,
+                          )),
+                      Text('Вступи в закрытый клуб ygeia',
+                          style: YgeiaTypography.bodySmall),
                     ],
                   ),
                 ),
                 TextButton(
                   onPressed: () => _openPremium(context),
-                  child: Text(
-                    'Подробнее',
-                    style: GoogleFonts.inter(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFF2D6A4F),
-                    ),
-                  ),
+                  child: Text('Подробнее',
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: YgeiaColors.accent,
+                      )),
                 ),
               ],
             ),
           ),
+
+          const SizedBox(height: 16),
         ],
       ),
     );
   }
 
-  void _open(
-      BuildContext context, String cat, Color color, IconData icon) {
+  void _open(BuildContext context, String cat, Color color, IconData icon) {
     Navigator.push(
       context,
       PageRouteBuilder(
@@ -221,7 +218,7 @@ class LessonsScreen extends StatelessWidget {
   void _openPremium(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: const Color(0xFFFAF4EC),
+      backgroundColor: YgeiaColors.bgCard,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -234,59 +231,30 @@ class LessonsScreen extends StatelessWidget {
               width: 44,
               height: 4,
               decoration: BoxDecoration(
-                color: const Color(0xFFE0E0E0),
+                color: YgeiaColors.divider,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
             const SizedBox(height: 20),
-            const Icon(Icons.stars, color: Color(0xFF2D6A4F), size: 44),
+            const Icon(LucideIcons.lock, color: YgeiaColors.accent, size: 44),
             const SizedBox(height: 16),
             Text(
               'Только для участников клуба',
-              style: GoogleFonts.playfairDisplay(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: const Color(0xFF1A1A1A),
-              ),
+              style: YgeiaTypography.h2,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
               'Этот раздел доступен участникам закрытого клуба ygeia. Вступи, чтобы получить доступ ко всем урокам.',
-              style: GoogleFonts.inter(
-                fontSize: 14,
-                color: const Color(0xFF666666),
-                height: 1.6,
-              ),
+              style: YgeiaTypography.bodySmall,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => const ClubScreen()),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2D6A4F),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: Text(
-                  'Вступить в клуб',
-                  style: GoogleFonts.inter(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Понятно'),
               ),
             ),
             const SizedBox(height: 12),
@@ -321,11 +289,11 @@ class _CategoryCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: const Color(0xFFFAF4EC),
+          color: YgeiaColors.bgCard,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withOpacity(0.04),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -337,14 +305,14 @@ class _CategoryCard extends StatelessWidget {
               width: 56,
               height: 56,
               decoration: BoxDecoration(
-                color: color.withOpacity(isPremium ? 0.06 : 0.1),
+                color: color.withOpacity(isPremium ? 0.05 : 0.12),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(icon,
-                  color: isPremium
-                      ? color.withOpacity(0.5)
-                      : color,
-                  size: 28),
+              child: Icon(
+                icon,
+                color: isPremium ? color.withOpacity(0.4) : color,
+                size: 28,
+              ),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -353,30 +321,24 @@ class _CategoryCard extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: GoogleFonts.playfairDisplay(
+                    style: GoogleFonts.fraunces(
                       fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                       color: isPremium
-                          ? const Color(0xFF999999)
-                          : const Color(0xFF1A1A1A),
+                          ? YgeiaColors.textMuted
+                          : YgeiaColors.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: GoogleFonts.inter(
-                      fontSize: 13,
-                      color: const Color(0xFF999999),
-                    ),
-                  ),
+                  Text(subtitle, style: YgeiaTypography.caption),
                 ],
               ),
             ),
             isPremium
                 ? const Icon(Icons.lock_outline,
-                    size: 18, color: Color(0xFFCCCCCC))
+                    size: 18, color: YgeiaColors.textMuted)
                 : const Icon(Icons.arrow_forward_ios,
-                    size: 16, color: Color(0xFF999999)),
+                    size: 16, color: YgeiaColors.textMuted),
           ],
         ),
       ),

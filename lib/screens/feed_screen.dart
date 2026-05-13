@@ -3,6 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/post.dart';
 import '../services/firestore_service.dart';
+import '../theme/colors.dart';
+import '../theme/typography.dart';
 import '../widgets/highlighted_text.dart';
 import 'post_detail_screen.dart';
 import 'search_screen.dart';
@@ -42,10 +44,11 @@ class _FeedScreenState extends State<FeedScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF0E8DA),
+      backgroundColor: YgeiaColors.bgBase,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF2D6A4F),
+        backgroundColor: YgeiaColors.bgBase,
         centerTitle: true,
+        elevation: 0,
         leading: Padding(
           padding: const EdgeInsets.only(left: 12),
           child: SizedBox(
@@ -56,16 +59,16 @@ class _FeedScreenState extends State<FeedScreen> {
         ),
         title: Text(
           'ygeía',
-          style: GoogleFonts.playfairDisplay(
-            color: Colors.white,
+          style: GoogleFonts.fraunces(
+            color: YgeiaColors.textPrimary,
             fontSize: 24,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 0.5,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.3,
           ),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.search, color: Colors.white),
+            icon: const Icon(Icons.search, color: YgeiaColors.textSecondary),
             onPressed: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const SearchScreen()),
@@ -74,7 +77,9 @@ class _FeedScreenState extends State<FeedScreen> {
           IconButton(
             icon: Icon(
               _showFavorites ? Icons.bookmark : Icons.bookmark_border,
-              color: Colors.white,
+              color: _showFavorites
+                  ? YgeiaColors.accent
+                  : YgeiaColors.textSecondary,
             ),
             onPressed: () {
               _loadFavorites();
@@ -88,7 +93,7 @@ class _FeedScreenState extends State<FeedScreen> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
-              child: CircularProgressIndicator(color: Color(0xFF2D6A4F)),
+              child: CircularProgressIndicator(color: YgeiaColors.accent),
             );
           }
 
@@ -104,15 +109,18 @@ class _FeedScreenState extends State<FeedScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
-                    _showFavorites ? Icons.bookmark_border : Icons.article_outlined,
+                    _showFavorites
+                        ? Icons.bookmark_border
+                        : Icons.article_outlined,
                     size: 56,
-                    color: const Color(0xFFCCCCCC),
+                    color: YgeiaColors.textMuted,
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    _showFavorites ? 'Нет сохранённых постов' : 'Нет публикаций',
-                    style: GoogleFonts.inter(
-                        fontSize: 15, color: const Color(0xFF999999)),
+                    _showFavorites
+                        ? 'Нет сохранённых статей'
+                        : 'Нет публикаций',
+                    style: YgeiaTypography.bodySmall,
                   ),
                 ],
               ),
@@ -120,7 +128,8 @@ class _FeedScreenState extends State<FeedScreen> {
           }
 
           return RefreshIndicator(
-            color: const Color(0xFF2D6A4F),
+            color: YgeiaColors.accent,
+            backgroundColor: YgeiaColors.bgCard,
             onRefresh: () async => _loadFavorites(),
             child: ListView.builder(
               padding: const EdgeInsets.all(16),
@@ -143,8 +152,12 @@ class PostCard extends StatelessWidget {
   final String query;
   final VoidCallback? onFavoriteChanged;
 
-  const PostCard(
-      {super.key, required this.post, required this.query, this.onFavoriteChanged});
+  const PostCard({
+    super.key,
+    required this.post,
+    required this.query,
+    this.onFavoriteChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -158,9 +171,10 @@ class PostCard extends StatelessWidget {
               opacity: animation,
               child: SlideTransition(
                 position: Tween<Offset>(
-                        begin: const Offset(0, 0.04), end: Offset.zero)
-                    .animate(CurvedAnimation(
-                        parent: animation, curve: Curves.easeOut)),
+                  begin: const Offset(0, 0.04),
+                  end: Offset.zero,
+                ).animate(
+                    CurvedAnimation(parent: animation, curve: Curves.easeOut)),
                 child: child,
               ),
             ),
@@ -170,12 +184,12 @@ class PostCard extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
-          color: const Color(0xFFFAF4EC),
+          color: YgeiaColors.bgCard,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 10,
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 12,
               offset: const Offset(0, 4),
             ),
           ],
@@ -183,6 +197,7 @@ class PostCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Image
             ClipRRect(
               borderRadius:
                   const BorderRadius.vertical(top: Radius.circular(16)),
@@ -197,86 +212,72 @@ class PostCard extends StatelessWidget {
                               ? child
                               : Container(
                                   height: 200,
-                                  color: const Color(0xFF2D6A4F)
-                                      .withOpacity(0.08),
+                                  color: YgeiaColors.accentSoft,
                                   child: const Center(
                                     child: CircularProgressIndicator(
-                                        color: Color(0xFF2D6A4F),
-                                        strokeWidth: 2),
+                                      color: YgeiaColors.accent,
+                                      strokeWidth: 2,
+                                    ),
                                   ),
                                 ),
                       errorBuilder: (_, __, ___) => _placeholderImage(),
                     )
                   : _placeholderImage(),
             ),
+
+            // Content
             Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Category chip
                   if (post.category.isNotEmpty)
                     Container(
-                      margin: const EdgeInsets.only(bottom: 8),
+                      margin: const EdgeInsets.only(bottom: 10),
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF2D6A4F).withOpacity(0.1),
+                        color: YgeiaColors.accentSoft,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
                         post.category,
                         style: GoogleFonts.inter(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            color: const Color(0xFF2D6A4F)),
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: YgeiaColors.accent,
+                        ),
                       ),
                     ),
+
+                  // Title
                   HighlightedText(
                     text: post.title,
                     query: query,
-                    baseStyle: GoogleFonts.playfairDisplay(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFF1A1A1A)),
+                    baseStyle: GoogleFonts.fraunces(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: YgeiaColors.textPrimary,
+                      height: 1.3,
+                    ),
                   ),
                   const SizedBox(height: 8),
+
+                  // Body preview
                   HighlightedText(
                     text: post.body,
                     query: query,
-                    baseStyle: GoogleFonts.inter(
-                        fontSize: 14,
-                        color: const Color(0xFF666666),
-                        height: 1.6),
+                    baseStyle: YgeiaTypography.bodySmall,
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(post.date,
-                          style: GoogleFonts.inter(
-                              fontSize: 12, color: const Color(0xFF999999))),
-                      Row(
-                        children: [
-                          const Icon(Icons.favorite_border,
-                              size: 15, color: Color(0xFF999999)),
-                          if (post.likes > 0) ...[
-                            const SizedBox(width: 4),
-                            Text('${post.likes}',
-                                style: GoogleFonts.inter(
-                                    fontSize: 12,
-                                    color: const Color(0xFF999999))),
-                          ],
-                          const SizedBox(width: 12),
-                          Text('Читать →',
-                              style: GoogleFonts.inter(
-                                  fontSize: 12,
-                                  color: const Color(0xFF2D6A4F),
-                                  fontWeight: FontWeight.w600)),
-                        ],
-                      ),
-                    ],
+                  const SizedBox(height: 14),
+
+                  // Date only — no social counters
+                  Text(
+                    post.date,
+                    style: YgeiaTypography.caption,
                   ),
                 ],
               ),
@@ -292,13 +293,16 @@ Widget _placeholderImage() {
   return Container(
     height: 200,
     width: double.infinity,
-    color: const Color(0xFF2D6A4F).withOpacity(0.08),
-    child:
-        const Icon(Icons.eco_outlined, size: 60, color: Color(0xFF2D6A4F)),
+    color: YgeiaColors.accentSoft,
+    child: const Icon(
+      Icons.eco_outlined,
+      size: 60,
+      color: YgeiaColors.accent,
+    ),
   );
 }
 
-// ── Кастомный лист ───────────────────────────────────────────────────────────
+// ── Leaf icon in AppBar ──────────────────────────────────────────────────────
 class _LeafPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
@@ -306,16 +310,15 @@ class _LeafPainter extends CustomPainter {
     final h = size.height;
 
     final fillPaint = Paint()
-      ..color = Colors.white
+      ..color = YgeiaColors.accent
       ..style = PaintingStyle.fill;
 
-    // Форма листа — миндалевидная, чуть наклонённая
     final leaf = Path();
-    leaf.moveTo(w * 0.50, h * 0.98); // нижний кончик (стебель)
+    leaf.moveTo(w * 0.50, h * 0.98);
     leaf.cubicTo(
       w * -0.05, h * 0.75,
       w * -0.05, h * 0.20,
-      w * 0.50, h * 0.02, // верхний кончик
+      w * 0.50, h * 0.02,
     );
     leaf.cubicTo(
       w * 1.05, h * 0.20,
@@ -325,11 +328,10 @@ class _LeafPainter extends CustomPainter {
     leaf.close();
     canvas.drawPath(leaf, fillPaint);
 
-    // Центральная жилка
     final veinPaint = Paint()
-      ..color = const Color(0xFF2D6A4F).withOpacity(0.35)
+      ..color = YgeiaColors.bgBase.withOpacity(0.55)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = w * 0.07
+      ..strokeWidth = w * 0.08
       ..strokeCap = StrokeCap.round;
 
     final vein = Path();
@@ -345,25 +347,29 @@ class _LeafPainter extends CustomPainter {
 const List<Map<String, String>> _staticPosts = [
   {
     'title': 'Утренняя йога: 5 асан для начала дня',
-    'body': 'Начни утро с этих простых асан — они разбудят тело и настроят ум на продуктивный день. Всего 15 минут изменят твоё утро.',
+    'body':
+        'Начни утро с этих простых асан — они разбудят тело и настроят ум на продуктивный день. Всего 15 минут изменят твоё утро.',
     'date': '9 мая 2026',
     'category': 'Йога',
   },
   {
     'title': 'Почему сахар по утрам — это плохая идея',
-    'body': 'Резкий скачок глюкозы утром запускает цикл усталости и тяги к сладкому. Рассказываем что есть вместо этого.',
+    'body':
+        'Резкий скачок глюкозы утром запускает цикл усталости и тяги к сладкому. Рассказываем что есть вместо этого.',
     'date': '8 мая 2026',
     'category': 'Питание',
   },
   {
     'title': '3 привычки для здоровья без усилий',
-    'body': 'Микро-привычки работают лучше жёстких систем. Вот три изменения, которые не потребуют силы воли.',
+    'body':
+        'Микро-привычки работают лучше жёстких систем. Вот три изменения, которые не потребуют силы воли.',
     'date': '7 мая 2026',
     'category': 'Привычки',
   },
   {
     'title': 'Как питаться, чтобы было больше энергии',
-    'body': 'Усталость после обеда — не норма. Разбираем что и когда есть, чтобы оставаться в ресурсе весь день.',
+    'body':
+        'Усталость после обеда — не норма. Разбираем что и когда есть, чтобы оставаться в ресурсе весь день.',
     'date': '6 мая 2026',
     'category': 'Питание',
   },

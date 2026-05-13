@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import '../../models/nutrition_profile.dart';
 import '../../services/nutrition_service.dart';
+import '../../theme/colors.dart';
 
 class NutritionOnboardingScreen extends StatefulWidget {
   final VoidCallback onDone;
@@ -24,11 +26,6 @@ class _NutritionOnboardingScreenState
   double _targetWeight = 55;
   int _activityLevel = 2;
   String _goal = 'lose';
-
-  final _ageFocus = FocusNode();
-  final _heightFocus = FocusNode();
-  final _weightFocus = FocusNode();
-  final _targetFocus = FocusNode();
 
   void _next() {
     if (_step < 6) {
@@ -58,7 +55,7 @@ class _NutritionOnboardingScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF0E8DA),
+      backgroundColor: YgeiaColors.bgBase,
       body: SafeArea(
         child: Column(
           children: [
@@ -130,11 +127,11 @@ class _NutritionOnboardingScreenState
                 child: ElevatedButton(
                   onPressed: _next,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2D6A4F),
+                    backgroundColor: YgeiaColors.accent,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14)),
+                        borderRadius: BorderRadius.circular(999)),
                   ),
                   child: Text(
                     _step < 6 ? 'Далее' : 'Рассчитать',
@@ -167,9 +164,7 @@ class _ProgressBar extends StatelessWidget {
               margin: const EdgeInsets.symmetric(horizontal: 2),
               height: 4,
               decoration: BoxDecoration(
-                color: i <= step
-                    ? const Color(0xFF2D6A4F)
-                    : const Color(0xFF2D6A4F).withOpacity(0.15),
+                color: i <= step ? YgeiaColors.accent : YgeiaColors.divider,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -192,27 +187,28 @@ class _GenderStep extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.person_outline,
-              size: 64, color: Color(0xFF2D6A4F)),
+          Icon(LucideIcons.user, size: 64, color: YgeiaColors.accent),
           const SizedBox(height: 24),
           Text('Твой пол',
-              style: GoogleFonts.playfairDisplay(
+              style: GoogleFonts.fraunces(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: const Color(0xFF1A1A1A))),
+                  color: YgeiaColors.textPrimary)),
           const SizedBox(height: 40),
           Row(
             children: [
               _GenderCard(
                 label: 'Женщина',
-                icon: '♀',
+                icon: LucideIcons.user,
+                iconColor: YgeiaColors.accentSecondary,
                 selected: selected == 'female',
                 onTap: () => onChanged('female'),
               ),
               const SizedBox(width: 16),
               _GenderCard(
                 label: 'Мужчина',
-                icon: '♂',
+                icon: LucideIcons.user,
+                iconColor: YgeiaColors.accent,
                 selected: selected == 'male',
                 onTap: () => onChanged('male'),
               ),
@@ -226,14 +222,17 @@ class _GenderStep extends StatelessWidget {
 
 class _GenderCard extends StatelessWidget {
   final String label;
-  final String icon;
+  final IconData icon;
+  final Color iconColor;
   final bool selected;
   final VoidCallback onTap;
-  const _GenderCard(
-      {required this.label,
-      required this.icon,
-      required this.selected,
-      required this.onTap});
+  const _GenderCard({
+    required this.label,
+    required this.icon,
+    required this.iconColor,
+    required this.selected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -244,30 +243,26 @@ class _GenderCard extends StatelessWidget {
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: selected
-                ? const Color(0xFF2D6A4F)
-                : const Color(0xFFFAF4EC),
+            color: selected ? YgeiaColors.accent : YgeiaColors.bgCard,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: selected
-                  ? const Color(0xFF2D6A4F)
-                  : const Color(0xFFDDD5C8),
+              color: selected ? YgeiaColors.accent : YgeiaColors.divider,
               width: 2,
             ),
           ),
           child: Column(
             children: [
-              Text(icon,
-                  style: TextStyle(
-                      fontSize: 40,
-                      color: selected ? Colors.white : const Color(0xFF2D6A4F))),
+              Icon(icon,
+                  size: 40,
+                  color: selected ? Colors.white : iconColor),
               const SizedBox(height: 8),
               Text(label,
                   style: GoogleFonts.inter(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
-                      color:
-                          selected ? Colors.white : const Color(0xFF1A1A1A))),
+                      color: selected
+                          ? Colors.white
+                          : YgeiaColors.textPrimary)),
             ],
           ),
         ),
@@ -304,13 +299,13 @@ class _NumberStep extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 56, color: const Color(0xFF2D6A4F)),
+          Icon(icon, size: 56, color: YgeiaColors.accent),
           const SizedBox(height: 24),
           Text(title,
-              style: GoogleFonts.playfairDisplay(
+              style: GoogleFonts.fraunces(
                   fontSize: 26,
                   fontWeight: FontWeight.bold,
-                  color: const Color(0xFF1A1A1A)),
+                  color: YgeiaColors.textPrimary),
               textAlign: TextAlign.center),
           const SizedBox(height: 40),
           Row(
@@ -318,27 +313,29 @@ class _NumberStep extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                decimals == 0 ? value.round().toString() : value.toStringAsFixed(1),
-                style: GoogleFonts.playfairDisplay(
+                decimals == 0
+                    ? value.round().toString()
+                    : value.toStringAsFixed(1),
+                style: GoogleFonts.fraunces(
                     fontSize: 72,
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xFF2D6A4F)),
+                    color: YgeiaColors.accent),
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 12, left: 8),
                 child: Text(unit,
                     style: GoogleFonts.inter(
-                        fontSize: 20, color: const Color(0xFF999999))),
+                        fontSize: 20, color: YgeiaColors.textMuted)),
               ),
             ],
           ),
           const SizedBox(height: 24),
           SliderTheme(
             data: SliderTheme.of(context).copyWith(
-              activeTrackColor: const Color(0xFF2D6A4F),
-              inactiveTrackColor: const Color(0xFF2D6A4F).withOpacity(0.15),
-              thumbColor: const Color(0xFF2D6A4F),
-              overlayColor: const Color(0xFF2D6A4F).withOpacity(0.15),
+              activeTrackColor: YgeiaColors.accent,
+              inactiveTrackColor: YgeiaColors.accent.withOpacity(0.15),
+              thumbColor: YgeiaColors.accent,
+              overlayColor: YgeiaColors.accent.withOpacity(0.15),
               thumbShape:
                   const RoundSliderThumbShape(enabledThumbRadius: 14),
               trackHeight: 6,
@@ -358,10 +355,10 @@ class _NumberStep extends StatelessWidget {
             children: [
               Text('${min.round()} $unit',
                   style: GoogleFonts.inter(
-                      fontSize: 12, color: const Color(0xFF999999))),
+                      fontSize: 12, color: YgeiaColors.textMuted)),
               Text('${max.round()} $unit',
                   style: GoogleFonts.inter(
-                      fontSize: 12, color: const Color(0xFF999999))),
+                      fontSize: 12, color: YgeiaColors.textMuted)),
             ],
           ),
         ],
@@ -391,10 +388,10 @@ class _ActivityStep extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text('Уровень активности',
-              style: GoogleFonts.playfairDisplay(
+              style: GoogleFonts.fraunces(
                   fontSize: 26,
                   fontWeight: FontWeight.bold,
-                  color: const Color(0xFF1A1A1A)),
+                  color: YgeiaColors.textPrimary),
               textAlign: TextAlign.center),
           const SizedBox(height: 24),
           ..._levels.asMap().entries.map((e) {
@@ -409,13 +406,13 @@ class _ActivityStep extends StatelessWidget {
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? const Color(0xFF2D6A4F)
-                      : const Color(0xFFFAF4EC),
+                      ? YgeiaColors.accent
+                      : YgeiaColors.bgCard,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                       color: isSelected
-                          ? const Color(0xFF2D6A4F)
-                          : const Color(0xFFDDD5C8)),
+                          ? YgeiaColors.accent
+                          : YgeiaColors.divider),
                 ),
                 child: Row(
                   children: [
@@ -431,13 +428,13 @@ class _ActivityStep extends StatelessWidget {
                                   fontWeight: FontWeight.w600,
                                   color: isSelected
                                       ? Colors.white
-                                      : const Color(0xFF1A1A1A))),
+                                      : YgeiaColors.textPrimary)),
                           Text(level['sub']!,
                               style: GoogleFonts.inter(
                                   fontSize: 12,
                                   color: isSelected
                                       ? Colors.white70
-                                      : const Color(0xFF999999))),
+                                      : YgeiaColors.textMuted)),
                         ],
                       ),
                     ),
@@ -467,13 +464,13 @@ class _GoalStep extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.flag_outlined, size: 56, color: Color(0xFF2D6A4F)),
+          Icon(Icons.flag_outlined, size: 56, color: YgeiaColors.accent),
           const SizedBox(height: 24),
           Text('Твоя цель',
-              style: GoogleFonts.playfairDisplay(
+              style: GoogleFonts.fraunces(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: const Color(0xFF1A1A1A))),
+                  color: YgeiaColors.textPrimary)),
           const SizedBox(height: 40),
           _GoalCard(
             label: 'Похудеть',
@@ -510,12 +507,13 @@ class _GoalCard extends StatelessWidget {
   final String icon;
   final bool selected;
   final VoidCallback onTap;
-  const _GoalCard(
-      {required this.label,
-      required this.sub,
-      required this.icon,
-      required this.selected,
-      required this.onTap});
+  const _GoalCard({
+    required this.label,
+    required this.sub,
+    required this.icon,
+    required this.selected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -525,12 +523,10 @@ class _GoalCard extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-          color: selected ? const Color(0xFF2D6A4F) : const Color(0xFFFAF4EC),
+          color: selected ? YgeiaColors.accent : YgeiaColors.bgCard,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-              color: selected
-                  ? const Color(0xFF2D6A4F)
-                  : const Color(0xFFDDD5C8),
+              color: selected ? YgeiaColors.accent : YgeiaColors.divider,
               width: 2),
         ),
         child: Row(
@@ -547,13 +543,13 @@ class _GoalCard extends StatelessWidget {
                           fontWeight: FontWeight.w700,
                           color: selected
                               ? Colors.white
-                              : const Color(0xFF1A1A1A))),
+                              : YgeiaColors.textPrimary)),
                   Text(sub,
                       style: GoogleFonts.inter(
                           fontSize: 13,
                           color: selected
                               ? Colors.white70
-                              : const Color(0xFF666666))),
+                              : YgeiaColors.textSecondary)),
                 ],
               ),
             ),

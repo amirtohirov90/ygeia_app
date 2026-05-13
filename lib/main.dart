@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
+import 'theme/app_theme.dart';
+import 'theme/colors.dart';
 import 'screens/feed_screen.dart';
 import 'screens/lessons_screen.dart';
-import 'screens/club_screen.dart';
-import 'screens/shop_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/splash_screen.dart';
@@ -30,14 +29,7 @@ class YgeiaApp extends StatelessWidget {
     return MaterialApp(
       title: 'ygeia',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF2D6A4F),
-          primary: const Color(0xFF2D6A4F),
-        ),
-        textTheme: GoogleFonts.interTextTheme(),
-        useMaterial3: true,
-      ),
+      theme: AppTheme.light,
       home: const _AppEntry(),
     );
   }
@@ -97,11 +89,11 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
 
-  final List<Widget> _screens = const [
+  // 4 tabs: Лента · Уроки · Профиль · КБЖУ
+  // Club and Shop are hidden behind kClubEnabled / kPaymentsEnabled flags
+  static const List<Widget> _screens = [
     FeedScreen(),
     LessonsScreen(),
-    ClubScreen(),
-    ShopScreen(),
     ProfileScreen(),
     NutritionScreen(),
   ];
@@ -117,41 +109,27 @@ class _MainScreenState extends State<MainScreen> {
         selectedIndex: _currentIndex,
         onDestinationSelected: (index) =>
             setState(() => _currentIndex = index),
-        backgroundColor: const Color(0xFFFAF4EC),
-        indicatorColor: const Color(0xFF2D6A4F).withOpacity(0.15),
+        backgroundColor: YgeiaColors.bgCard,
+        indicatorColor: YgeiaColors.accentSoft,
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home, color: Color(0xFF2D6A4F)),
+            selectedIcon: Icon(Icons.home),
             label: 'Лента',
           ),
           NavigationDestination(
             icon: Icon(Icons.menu_book_outlined),
-            selectedIcon:
-                Icon(Icons.menu_book, color: Color(0xFF2D6A4F)),
+            selectedIcon: Icon(Icons.menu_book),
             label: 'Уроки',
           ),
           NavigationDestination(
-            icon: Icon(Icons.stars_outlined),
-            selectedIcon: Icon(Icons.stars, color: Color(0xFF2D6A4F)),
-            label: 'Клуб',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.shopping_bag_outlined),
-            selectedIcon:
-                Icon(Icons.shopping_bag, color: Color(0xFF2D6A4F)),
-            label: 'Магазин',
-          ),
-          NavigationDestination(
             icon: Icon(Icons.person_outline),
-            selectedIcon:
-                Icon(Icons.person, color: Color(0xFF2D6A4F)),
+            selectedIcon: Icon(Icons.person),
             label: 'Профиль',
           ),
           NavigationDestination(
-            icon: Icon(Icons.local_fire_department_outlined),
-            selectedIcon:
-                Icon(Icons.local_fire_department, color: Color(0xFF2D6A4F)),
+            icon: Icon(Icons.bar_chart_outlined),
+            selectedIcon: Icon(Icons.bar_chart),
             label: 'КБЖУ',
           ),
         ],

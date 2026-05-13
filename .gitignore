@@ -43,3 +43,24 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# === Custom: Phase 1 cleanup ===
+
+# Эксперименты с иконками (одноразовые)
+assets/icon_v*.png
+assets/icon_flower_full.png
+assets/icon_wings_full.png
+assets/icon_preview_all.png
+assets/icon_styles_preview.png
+assets/icon_ygeia_preview.png
+assets/icon_yw_preview.png
+
+# Python-скрипты генерации иконок
+assets/gen_*.py
+
+# Auto-generated файлы Flutter (регенерируются автоматически)
+linux/flutter/generated_plugin_registrant.cc
+linux/flutter/generated_plugins.cmake
+macos/Flutter/GeneratedPluginRegistrant.swift
+windows/flutter/generated_plugin_registrant.cc
+windows/flutter/generated_plugins.cmake

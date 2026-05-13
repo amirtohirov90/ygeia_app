@@ -1,9 +1,11 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import '../../models/nutrition_profile.dart';
 import '../../models/food_item.dart';
 import '../../services/nutrition_service.dart';
+import '../../theme/colors.dart';
 import 'nutrition_onboarding_screen.dart';
 import 'food_search_screen.dart';
 
@@ -67,8 +69,9 @@ class _NutritionScreenState extends State<NutritionScreen> {
   Widget build(BuildContext context) {
     if (_loading) {
       return const Scaffold(
-        backgroundColor: Color(0xFFF0E8DA),
-        body: Center(child: CircularProgressIndicator(color: Color(0xFF2D6A4F))),
+        backgroundColor: YgeiaColors.bgBase,
+        body: Center(
+            child: CircularProgressIndicator(color: YgeiaColors.accent)),
       );
     }
 
@@ -81,38 +84,33 @@ class _NutritionScreenState extends State<NutritionScreen> {
     final remaining = targetCal - summary.calories;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF0E8DA),
+      backgroundColor: YgeiaColors.bgBase,
       body: RefreshIndicator(
-        color: const Color(0xFF2D6A4F),
+        color: YgeiaColors.accent,
         onRefresh: _load,
         child: CustomScrollView(
           slivers: [
             SliverAppBar(
               pinned: true,
-              backgroundColor: const Color(0xFF2D6A4F),
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              foregroundColor: YgeiaColors.textPrimary,
               title: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Container(
-                    width: 30,
-                    height: 30,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(Icons.eco, size: 16, color: Colors.white),
-                  ),
+                  const Icon(Icons.eco, size: 20, color: YgeiaColors.accent),
                   const SizedBox(width: 8),
                   Text('КБЖУ',
-                      style: GoogleFonts.playfairDisplay(
-                          color: Colors.white,
+                      style: GoogleFonts.fraunces(
+                          color: YgeiaColors.textPrimary,
                           fontSize: 22,
                           fontWeight: FontWeight.bold)),
                 ],
               ),
               actions: [
                 IconButton(
-                  icon: const Icon(Icons.settings_outlined, color: Colors.white),
+                  icon: const Icon(Icons.settings_outlined,
+                      color: YgeiaColors.textSecondary),
                   onPressed: () async {
                     await Navigator.push(
                       context,
@@ -133,7 +131,6 @@ class _NutritionScreenState extends State<NutritionScreen> {
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
-                    // Дата
                     _DateSelector(
                       date: _date,
                       onChanged: (d) {
@@ -142,16 +139,12 @@ class _NutritionScreenState extends State<NutritionScreen> {
                       },
                     ),
                     const SizedBox(height: 16),
-
-                    // Калории — большой виджет
                     _CalorieWidget(
                       consumed: summary.calories,
                       target: targetCal,
                       remaining: remaining,
                     ),
                     const SizedBox(height: 12),
-
-                    // Макросы
                     _MacroRow(
                       protein: summary.protein,
                       targetProtein: _profile!.targetProtein,
@@ -161,26 +154,21 @@ class _NutritionScreenState extends State<NutritionScreen> {
                       targetCarbs: _profile!.targetCarbs,
                     ),
                     const SizedBox(height: 16),
-
-                    // Вода
                     _WaterWidget(
                       glasses: _waterGlasses,
                       onChanged: _setWater,
                     ),
                     const SizedBox(height: 16),
-
-                    // Приёмы пищи
                     ..._mealTypes.map((meal) => _MealSection(
-                          mealType: meal['key']!,
-                          title: meal['title']!,
-                          icon: meal['icon']!,
+                          mealType: meal.key,
+                          title: meal.title,
+                          icon: meal.icon,
                           entries: _entries
-                              .where((e) => e.mealType == meal['key'])
+                              .where((e) => e.mealType == meal.key)
                               .toList(),
-                          onAdd: () => _addEntry(meal['key']!),
+                          onAdd: () => _addEntry(meal.key),
                           onDelete: _deleteEntry,
                         )),
-
                     const SizedBox(height: 20),
                   ],
                 ),
@@ -193,11 +181,19 @@ class _NutritionScreenState extends State<NutritionScreen> {
   }
 }
 
+class _MealDef {
+  final String key;
+  final String title;
+  final IconData icon;
+  const _MealDef(
+      {required this.key, required this.title, required this.icon});
+}
+
 const _mealTypes = [
-  {'key': 'breakfast', 'title': 'Завтрак', 'icon': '🌅'},
-  {'key': 'lunch', 'title': 'Обед', 'icon': '☀️'},
-  {'key': 'dinner', 'title': 'Ужин', 'icon': '🌙'},
-  {'key': 'snack', 'title': 'Перекус', 'icon': '🍎'},
+  _MealDef(key: 'breakfast', title: 'Завтрак', icon: LucideIcons.sunrise),
+  _MealDef(key: 'lunch', title: 'Обед', icon: LucideIcons.sun),
+  _MealDef(key: 'dinner', title: 'Ужин', icon: LucideIcons.moon),
+  _MealDef(key: 'snack', title: 'Перекус', icon: LucideIcons.apple),
 ];
 
 class _DateSelector extends StatelessWidget {
@@ -211,8 +207,7 @@ class _DateSelector extends StatelessWidget {
     final today = DateTime(now.year, now.month, now.day);
     final selected = DateTime(d.year, d.month, d.day);
     if (selected == today) return 'Сегодня';
-    if (selected == today.subtract(const Duration(days: 1)))
-      return 'Вчера';
+    if (selected == today.subtract(const Duration(days: 1))) return 'Вчера';
     return '${d.day}.${d.month.toString().padLeft(2, '0')}.${d.year}';
   }
 
@@ -222,8 +217,9 @@ class _DateSelector extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         IconButton(
-          icon: const Icon(Icons.chevron_left, color: Color(0xFF2D6A4F)),
-          onPressed: () => onChanged(date.subtract(const Duration(days: 1))),
+          icon: const Icon(Icons.chevron_left, color: YgeiaColors.accent),
+          onPressed: () =>
+              onChanged(date.subtract(const Duration(days: 1))),
         ),
         GestureDetector(
           onTap: () async {
@@ -235,7 +231,7 @@ class _DateSelector extends StatelessWidget {
               builder: (ctx, child) => Theme(
                 data: Theme.of(ctx).copyWith(
                   colorScheme: const ColorScheme.light(
-                      primary: Color(0xFF2D6A4F)),
+                      primary: YgeiaColors.accent),
                 ),
                 child: child!,
               ),
@@ -247,14 +243,16 @@ class _DateSelector extends StatelessWidget {
             style: GoogleFonts.inter(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
-                color: const Color(0xFF1A1A1A)),
+                color: YgeiaColors.textPrimary),
           ),
         ),
         IconButton(
-          icon: const Icon(Icons.chevron_right, color: Color(0xFF2D6A4F)),
+          icon:
+              const Icon(Icons.chevron_right, color: YgeiaColors.accent),
           onPressed: () {
             final next = date.add(const Duration(days: 1));
-            if (next.isBefore(DateTime.now().add(const Duration(days: 1)))) {
+            if (next
+                .isBefore(DateTime.now().add(const Duration(days: 1)))) {
               onChanged(next);
             }
           },
@@ -283,7 +281,7 @@ class _CalorieWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color(0xFFFAF4EC),
+        color: YgeiaColors.bgCard,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -294,7 +292,6 @@ class _CalorieWidget extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Круговой прогресс
           SizedBox(
             width: 100,
             height: 100,
@@ -320,12 +317,12 @@ class _CalorieWidget extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                           color: isOver
                               ? const Color(0xFFE07A5F)
-                              : const Color(0xFF2D6A4F)),
+                              : YgeiaColors.accent),
                     ),
                     Text(
                       isOver ? 'сверх' : 'осталось',
                       style: GoogleFonts.inter(
-                          fontSize: 9, color: const Color(0xFF999999)),
+                          fontSize: 9, color: YgeiaColors.textMuted),
                     ),
                   ],
                 ),
@@ -340,19 +337,19 @@ class _CalorieWidget extends StatelessWidget {
                 _CalRow(
                     label: 'Норма',
                     value: '${target.round()} ккал',
-                    color: const Color(0xFF999999)),
+                    color: YgeiaColors.textMuted),
                 const SizedBox(height: 8),
                 _CalRow(
                     label: 'Съедено',
                     value: '${consumed.round()} ккал',
-                    color: const Color(0xFF2D6A4F)),
+                    color: YgeiaColors.accent),
                 const SizedBox(height: 8),
                 _CalRow(
                     label: remaining > 0 ? 'Осталось' : 'Перебор',
                     value: '${remaining.abs().round()} ккал',
                     color: isOver
                         ? const Color(0xFFE07A5F)
-                        : const Color(0xFF1A1A1A)),
+                        : YgeiaColors.textPrimary),
               ],
             ),
           ),
@@ -376,7 +373,7 @@ class _CalRow extends StatelessWidget {
       children: [
         Text(label,
             style: GoogleFonts.inter(
-                fontSize: 13, color: const Color(0xFF666666))),
+                fontSize: 13, color: YgeiaColors.textSecondary)),
         Text(value,
             style: GoogleFonts.inter(
                 fontSize: 13,
@@ -400,13 +397,13 @@ class _CircleProgressPainter extends CustomPainter {
     const strokeWidth = 10.0;
 
     final bgPaint = Paint()
-      ..color = const Color(0xFF2D6A4F).withOpacity(0.1)
+      ..color = YgeiaColors.accent.withOpacity(0.1)
       ..strokeWidth = strokeWidth
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
 
     final fgPaint = Paint()
-      ..color = isOver ? const Color(0xFFE07A5F) : const Color(0xFF2D6A4F)
+      ..color = isOver ? const Color(0xFFE07A5F) : YgeiaColors.accent
       ..strokeWidth = strokeWidth
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
@@ -447,7 +444,7 @@ class _MacroRow extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFFAF4EC),
+        color: YgeiaColors.bgCard,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -462,19 +459,19 @@ class _MacroRow extends StatelessWidget {
               label: 'Белки',
               value: protein,
               target: targetProtein,
-              color: const Color(0xFF52B788)),
+              color: YgeiaColors.accent),
           const SizedBox(width: 12),
           _MacroBar(
               label: 'Жиры',
               value: fat,
               target: targetFat,
-              color: const Color(0xFFE07A5F)),
+              color: YgeiaColors.accentSecondary),
           const SizedBox(width: 12),
           _MacroBar(
               label: 'Углеводы',
               value: carbs,
               target: targetCarbs,
-              color: const Color(0xFF3D405B)),
+              color: YgeiaColors.textMuted),
         ],
       ),
     );
@@ -519,10 +516,10 @@ class _MacroBar extends StatelessWidget {
           const SizedBox(height: 4),
           Text(label,
               style: GoogleFonts.inter(
-                  fontSize: 11, color: const Color(0xFF999999))),
+                  fontSize: 11, color: YgeiaColors.textMuted)),
           Text('из ${target.round()}г',
               style: GoogleFonts.inter(
-                  fontSize: 10, color: const Color(0xFFBBBBBB))),
+                  fontSize: 10, color: YgeiaColors.textMuted)),
         ],
       ),
     );
@@ -541,7 +538,7 @@ class _WaterWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFFAF4EC),
+        color: YgeiaColors.bgCard,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -558,21 +555,22 @@ class _WaterWidget extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const Text('💧', style: TextStyle(fontSize: 18)),
+                  const Icon(LucideIcons.droplet,
+                      size: 18, color: YgeiaColors.accent),
                   const SizedBox(width: 8),
                   Text('Вода',
                       style: GoogleFonts.inter(
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
-                          color: const Color(0xFF1A1A1A))),
+                          color: YgeiaColors.textPrimary)),
                 ],
               ),
               Text('$glasses / $target стаканов',
                   style: GoogleFonts.inter(
                       fontSize: 13,
                       color: glasses >= target
-                          ? const Color(0xFF2D6A4F)
-                          : const Color(0xFF999999),
+                          ? YgeiaColors.accent
+                          : YgeiaColors.textMuted,
                       fontWeight: FontWeight.w600)),
             ],
           ),
@@ -583,23 +581,14 @@ class _WaterWidget extends StatelessWidget {
               return Expanded(
                 child: GestureDetector(
                   onTap: () => onChanged(i + 1 == glasses ? i : i + 1),
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 2),
-                    height: 32,
-                    decoration: BoxDecoration(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 2),
+                    child: Icon(
+                      LucideIcons.droplet,
+                      size: 26,
                       color: filled
-                          ? const Color(0xFF4A90D9).withOpacity(0.8)
-                          : const Color(0xFF4A90D9).withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Center(
-                      child: Text('💧',
-                          style: TextStyle(
-                              fontSize: 14,
-                              color: filled
-                                  ? Colors.white
-                                  : const Color(0xFF4A90D9)
-                                      .withOpacity(0.3))),
+                          ? YgeiaColors.accent
+                          : YgeiaColors.accent.withOpacity(0.25),
                     ),
                   ),
                 ),
@@ -615,7 +604,7 @@ class _WaterWidget extends StatelessWidget {
 class _MealSection extends StatelessWidget {
   final String mealType;
   final String title;
-  final String icon;
+  final IconData icon;
   final List<MealEntry> entries;
   final VoidCallback onAdd;
   final ValueChanged<String> onDelete;
@@ -629,15 +618,14 @@ class _MealSection extends StatelessWidget {
     required this.onDelete,
   });
 
-  double get _totalCal =>
-      entries.fold(0, (s, e) => s + e.calories);
+  double get _totalCal => entries.fold(0, (s, e) => s + e.calories);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFFFAF4EC),
+        color: YgeiaColors.bgCard,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -656,19 +644,19 @@ class _MealSection extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Text(icon, style: const TextStyle(fontSize: 20)),
+                    Icon(icon, size: 20, color: YgeiaColors.accent),
                     const SizedBox(width: 8),
                     Text(title,
                         style: GoogleFonts.inter(
                             fontSize: 15,
                             fontWeight: FontWeight.w700,
-                            color: const Color(0xFF1A1A1A))),
+                            color: YgeiaColors.textPrimary)),
                     if (entries.isNotEmpty) ...[
                       const SizedBox(width: 8),
                       Text('${_totalCal.round()} ккал',
                           style: GoogleFonts.inter(
                               fontSize: 12,
-                              color: const Color(0xFF2D6A4F),
+                              color: YgeiaColors.accent,
                               fontWeight: FontWeight.w600)),
                     ],
                   ],
@@ -679,7 +667,7 @@ class _MealSection extends StatelessWidget {
                     width: 30,
                     height: 30,
                     decoration: const BoxDecoration(
-                      color: Color(0xFF2D6A4F),
+                      color: YgeiaColors.accent,
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(Icons.add,
@@ -690,9 +678,9 @@ class _MealSection extends StatelessWidget {
             ),
           ),
           if (entries.isNotEmpty)
-            const Divider(height: 1, color: Color(0xFFEEE8DE)),
-          ...entries.map((e) => _EntryTile(
-              entry: e, onDelete: () => onDelete(e.id))),
+            const Divider(height: 1, color: YgeiaColors.divider),
+          ...entries.map((e) =>
+              _EntryTile(entry: e, onDelete: () => onDelete(e.id))),
         ],
       ),
     );
@@ -714,12 +702,12 @@ class _EntryTile extends StatelessWidget {
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 16),
         color: const Color(0xFFE07A5F).withOpacity(0.15),
-        child: const Icon(Icons.delete_outline,
-            color: Color(0xFFE07A5F)),
+        child: const Icon(Icons.delete_outline, color: Color(0xFFE07A5F)),
       ),
       onDismissed: (_) => onDelete(),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        padding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Row(
           children: [
             Expanded(
@@ -730,14 +718,14 @@ class _EntryTile extends StatelessWidget {
                       style: GoogleFonts.inter(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
-                          color: const Color(0xFF1A1A1A))),
-                  Text('${entry.amount.round()}г · '
+                          color: YgeiaColors.textPrimary)),
+                  Text(
+                      '${entry.amount.round()}г · '
                       'Б:${entry.protein.toStringAsFixed(1)} '
                       'Ж:${entry.fat.toStringAsFixed(1)} '
                       'У:${entry.carbs.toStringAsFixed(1)}',
                       style: GoogleFonts.inter(
-                          fontSize: 11,
-                          color: const Color(0xFF999999))),
+                          fontSize: 11, color: YgeiaColors.textMuted)),
                 ],
               ),
             ),
@@ -745,7 +733,7 @@ class _EntryTile extends StatelessWidget {
                 style: GoogleFonts.inter(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
-                    color: const Color(0xFF2D6A4F))),
+                    color: YgeiaColors.accent)),
           ],
         ),
       ),

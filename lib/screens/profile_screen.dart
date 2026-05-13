@@ -5,10 +5,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import '../services/auth_service.dart';
 import '../services/user_profile_service.dart';
-import '../services/english_service.dart';
-import '../services/nutrition_service.dart';
 import '../services/subscription_service.dart';
 import '../services/notification_service.dart';
+import '../theme/colors.dart';
+import '../theme/typography.dart';
+import '../config/feature_flags.dart';
 import 'auth_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -24,7 +25,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   String? _nickname;
   String? _avatarPath;
-  EnglishProgress _englishProgress = EnglishProgress.empty();
   SubscriptionStatus? _subscription;
   bool _notificationsEnabled = false;
   bool _loading = true;
@@ -38,14 +38,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _loadProfile() async {
     final nick = await _profileService.getNickname();
     final avatar = await _profileService.getAvatarPath();
-    final engProgress = await EnglishService().getProgress();
     final sub = await SubscriptionService.getSubscription();
     final notifEnabled = await NotificationService.isEnabled();
     if (mounted) {
       setState(() {
         _nickname = nick;
         _avatarPath = avatar;
-        _englishProgress = engProgress;
         _subscription = sub;
         _notificationsEnabled = notifEnabled;
         _loading = false;
@@ -54,7 +52,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _pickAvatar(ImageSource source) async {
-    Navigator.pop(context); // close bottom sheet
+    Navigator.pop(context);
     final path = await _profileService.pickAndSaveAvatar(source);
     if (path != null && mounted) {
       setState(() => _avatarPath = path);
@@ -64,9 +62,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _showAvatarOptions() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: const Color(0xFFFAF4EC),
+      backgroundColor: YgeiaColors.bgCard,
       shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       builder: (_) => Padding(
         padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
         child: Column(
@@ -76,13 +75,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                  color: const Color(0xFFDDD5C8),
-                  borderRadius: BorderRadius.circular(2)),
+                color: YgeiaColors.divider,
+                borderRadius: BorderRadius.circular(2),
+              ),
             ),
             const SizedBox(height: 20),
-            Text('Изменить фото',
-                style: GoogleFonts.playfairDisplay(
-                    fontSize: 18, fontWeight: FontWeight.bold)),
+            Text('Изменить фото', style: YgeiaTypography.h3),
             const SizedBox(height: 16),
             _SheetOption(
               icon: Icons.photo_camera_outlined,
@@ -119,32 +117,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        backgroundColor: const Color(0xFFFAF4EC),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text('Ваш никнейм',
-            style: GoogleFonts.playfairDisplay(
-                fontWeight: FontWeight.bold, fontSize: 18)),
+        backgroundColor: YgeiaColors.bgCard,
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text('Ваш никнейм', style: YgeiaTypography.h3),
         content: TextField(
           controller: ctrl,
           autofocus: true,
           maxLength: 24,
+          style: YgeiaTypography.body,
           decoration: InputDecoration(
             hintText: 'Введите никнейм',
-            hintStyle: GoogleFonts.inter(color: const Color(0xFF999999)),
+            hintStyle:
+                GoogleFonts.inter(fontSize: 14, color: YgeiaColors.textMuted),
             filled: true,
-            fillColor: const Color(0xFFF0E8DA),
+            fillColor: YgeiaColors.bgCardElevated,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
               borderSide: BorderSide.none,
             ),
           ),
-          style: GoogleFonts.inter(fontSize: 15),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text('Отмена',
-                style: GoogleFonts.inter(color: const Color(0xFF888888))),
+                style: GoogleFonts.inter(color: YgeiaColors.textMuted)),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -156,8 +154,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF2D6A4F),
-              foregroundColor: Colors.white,
+              backgroundColor: YgeiaColors.accent,
+              foregroundColor: YgeiaColors.white,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
               elevation: 0,
@@ -181,28 +179,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
             : (user?.email?.split('@').first ?? 'Гость');
 
         return Scaffold(
-          backgroundColor: const Color(0xFFF0E8DA),
+          backgroundColor: YgeiaColors.bgBase,
           appBar: AppBar(
-            backgroundColor: const Color(0xFF2D6A4F),
-            title: Text('Профиль',
-                style: GoogleFonts.playfairDisplay(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold)),
+            title: Text('Профиль', style: YgeiaTypography.h2),
+            backgroundColor: YgeiaColors.bgBase,
+            elevation: 0,
           ),
           body: _loading
               ? const Center(
-                  child: CircularProgressIndicator(color: Color(0xFF2D6A4F)))
+                  child: CircularProgressIndicator(color: YgeiaColors.accent))
               : ListView(
                   padding: const EdgeInsets.all(16),
                   children: [
                     const SizedBox(height: 16),
 
-                    // ── Avatar + Name ───────────────────────────────────────
+                    // ── Avatar + Name ───────────────────────────────────
                     Center(
                       child: Column(
                         children: [
-                          // Avatar circle with camera badge
                           Stack(
                             children: [
                               GestureDetector(
@@ -211,12 +205,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   width: 100,
                                   height: 100,
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFF2D6A4F),
+                                    color: YgeiaColors.accent,
                                     shape: BoxShape.circle,
                                     boxShadow: [
                                       BoxShadow(
-                                        color: const Color(0xFF2D6A4F)
-                                            .withOpacity(0.25),
+                                        color: YgeiaColors.accent
+                                            .withOpacity(0.22),
                                         blurRadius: 16,
                                         offset: const Offset(0, 6),
                                       ),
@@ -230,7 +224,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           size: 50, color: Colors.white),
                                 ),
                               ),
-                              // Camera badge
                               Positioned(
                                 bottom: 0,
                                 right: 0,
@@ -240,13 +233,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     width: 30,
                                     height: 30,
                                     decoration: const BoxDecoration(
-                                      color: Color(0xFF2D6A4F),
+                                      color: YgeiaColors.accent,
                                       shape: BoxShape.circle,
                                     ),
-                                    child: const Icon(
-                                        Icons.camera_alt_rounded,
-                                        size: 16,
-                                        color: Colors.white),
+                                    child: const Icon(Icons.camera_alt_rounded,
+                                        size: 16, color: Colors.white),
                                   ),
                                 ),
                               ),
@@ -254,33 +245,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           const SizedBox(height: 14),
 
-                          // Display name (nickname or email)
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
-                                displayName,
-                                style: GoogleFonts.playfairDisplay(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                  color: const Color(0xFF1A1A1A),
-                                ),
-                              ),
+                              Text(displayName, style: YgeiaTypography.h2),
                               const SizedBox(width: 6),
                               GestureDetector(
                                 onTap: _editNickname,
                                 child: const Icon(Icons.edit_outlined,
-                                    size: 18, color: Color(0xFF2D6A4F)),
+                                    size: 18, color: YgeiaColors.accent),
                               ),
                             ],
                           ),
 
                           if (_nickname != null && user?.email != null)
-                            Text(
-                              user!.email!,
-                              style: GoogleFonts.inter(
-                                  fontSize: 13, color: const Color(0xFF999999)),
-                            ),
+                            Text(user!.email!, style: YgeiaTypography.caption),
 
                           const SizedBox(height: 4),
                           GestureDetector(
@@ -290,59 +269,57 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ? '+ Добавить никнейм'
                                   : 'Изменить никнейм',
                               style: GoogleFonts.inter(
-                                  fontSize: 13,
-                                  color: const Color(0xFF2D6A4F),
-                                  fontWeight: FontWeight.w500),
+                                fontSize: 13,
+                                color: YgeiaColors.accent,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ),
                         ],
                       ),
                     ),
 
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 28),
 
-                    // ── Subscription card ───────────────────────────────────
-                    _buildSubscriptionCard(),
+                    // ── Subscription card ───────────────────────────────
+                    if (FeatureFlags.kClubEnabled) ...[
+                      _buildSubscriptionCard(),
+                      const SizedBox(height: 20),
+                    ],
 
-                    const SizedBox(height: 16),
-
-                    // ── Progress stats ──────────────────────────────────────
-                    _buildProgressStats(),
-
-                    const SizedBox(height: 20),
-
-                    // ── Auth button ─────────────────────────────────────────
+                    // ── Auth button ─────────────────────────────────────
                     if (user == null)
                       SizedBox(
                         width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () => Navigator.push(context,
-                              MaterialPageRoute(
-                                  builder: (_) => const AuthScreen())),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF2D6A4F),
-                            foregroundColor: Colors.white,
+                        child: OutlinedButton(
+                          onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const AuthScreen()),
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: YgeiaColors.accent,
+                            side: const BorderSide(
+                                color: YgeiaColors.accent, width: 1.5),
                             padding:
                                 const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12)),
+                                borderRadius: BorderRadius.circular(999)),
                           ),
-                          child: Text('Войти / Зарегистрироваться',
-                              style: GoogleFonts.inter(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600)),
+                          child: const Text('Войти / Зарегистрироваться'),
                         ),
                       ),
 
                     const SizedBox(height: 20),
 
-                    // ── Menu items ──────────────────────────────────────────
+                    // ── Menu ────────────────────────────────────────────
                     _MenuItem(
                         icon: Icons.bookmark_outline,
                         title: 'Сохранённые'),
-                    _MenuItem(
-                        icon: Icons.shopping_bag_outlined,
-                        title: 'Мои покупки'),
+                    if (FeatureFlags.kPaymentsEnabled)
+                      _MenuItem(
+                          icon: Icons.shopping_bag_outlined,
+                          title: 'Мои покупки'),
                     _MenuItem(
                         icon: Icons.settings_outlined,
                         title: 'Настройки'),
@@ -375,7 +352,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                     ],
-                    const SizedBox(height: 20),
+
+                    const SizedBox(height: 28),
                   ],
                 ),
         );
@@ -386,21 +364,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildSubscriptionCard() {
     final sub = _subscription;
 
-    // Активная подписка клуба
+    // Active club subscription
     if (sub != null && sub.isActive && sub.isClub) {
-      final expiring = sub.isExpiringSoon;
       return Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-            colors: [Color(0xFF2D6A4F), Color(0xFF40916C)],
+            colors: [YgeiaColors.accent, Color(0xFF40916C)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF2D6A4F).withOpacity(0.25),
+              color: YgeiaColors.accent.withOpacity(0.22),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -425,10 +402,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Text(
                     sub.planTitle,
                     style: GoogleFonts.inter(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                    ),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white),
                   ),
                   const SizedBox(height: 2),
                   Text(
@@ -436,27 +412,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ? 'Активен · ${sub.expiresLabel}'
                         : 'Активен',
                     style: GoogleFonts.inter(
-                      fontSize: 12,
-                      color: Colors.white.withOpacity(0.85),
-                    ),
+                        fontSize: 12, color: Colors.white.withOpacity(0.85)),
                   ),
                 ],
               ),
             ),
-            if (expiring)
+            if (sub.isExpiringSoon)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFE07A5F),
+                  color: YgeiaColors.accentSecondary,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
                   'Скоро истечёт',
                   style: GoogleFonts.inter(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                  ),
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white),
                 ),
               ),
           ],
@@ -464,56 +438,55 @@ class _ProfileScreenState extends State<ProfileScreen> {
       );
     }
 
-    // Куплена книга (без срока)
+    // Book purchased
     if (sub != null && sub.isActive && sub.isBook) {
       return Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFFFAF4EC),
+          color: YgeiaColors.bgCard,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFF2D6A4F).withOpacity(0.3)),
+          border: Border.all(
+              color: YgeiaColors.accent.withOpacity(0.3)),
         ),
         child: Row(
           children: [
-            const Icon(Icons.menu_book, color: Color(0xFF2D6A4F), size: 28),
+            const Icon(Icons.menu_book,
+                color: YgeiaColors.accent, size: 28),
             const SizedBox(width: 14),
             Expanded(
               child: Text(
                 sub.planTitle,
                 style: GoogleFonts.inter(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: const Color(0xFF1A1A1A),
-                ),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: YgeiaColors.textPrimary),
               ),
             ),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: const Color(0xFF2D6A4F).withOpacity(0.1),
+                color: YgeiaColors.accentSoft,
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: Text(
-                'Куплено',
-                style: GoogleFonts.inter(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: const Color(0xFF2D6A4F),
-                ),
-              ),
+              child: Text('Куплено',
+                  style: GoogleFonts.inter(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: YgeiaColors.accent)),
             ),
           ],
         ),
       );
     }
 
-    // Нет подписки — CTA
+    // No subscription — CTA
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFFAF4EC),
+        color: YgeiaColors.bgCard,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFDDD5C8)),
+        border: Border.all(color: YgeiaColors.divider),
       ),
       child: Row(
         children: [
@@ -521,115 +494,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
             width: 42,
             height: 42,
             decoration: BoxDecoration(
-              color: const Color(0xFF2D6A4F).withOpacity(0.08),
+              color: YgeiaColors.accentSoft,
               shape: BoxShape.circle,
             ),
             child: const Icon(Icons.stars_outlined,
-                color: Color(0xFF2D6A4F), size: 22),
+                color: YgeiaColors.accent, size: 22),
           ),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Клуб ygeia',
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: const Color(0xFF1A1A1A),
-                  ),
-                ),
-                Text(
-                  'Эксклюзивный контент и сообщество',
-                  style: GoogleFonts.inter(
-                      fontSize: 12, color: const Color(0xFF999999)),
-                ),
+                Text('Клуб ygeia',
+                    style: GoogleFonts.inter(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: YgeiaColors.textPrimary)),
+                Text('Эксклюзивный контент',
+                    style: YgeiaTypography.caption),
               ],
             ),
           ),
           const Icon(Icons.arrow_forward_ios,
-              size: 14, color: Color(0xFF999999)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildProgressStats() {
-    final completedLessons =
-        _englishProgress.lessons.values.where((l) => l.completed).length;
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFAF4EC),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Мой прогресс',
-              style: GoogleFonts.inter(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: const Color(0xFF1A1A1A))),
-          const SizedBox(height: 14),
-          Row(
-            children: [
-              _ProgressStat(
-                emoji: '⚡',
-                value: '${_englishProgress.totalXp}',
-                label: 'XP',
-              ),
-              _ProgressStat(
-                emoji: '🔥',
-                value: '${_englishProgress.currentStreak}',
-                label: 'Серия дней',
-              ),
-              _ProgressStat(
-                emoji: '📚',
-                value: '$completedLessons',
-                label: 'Уроков',
-              ),
-              _ProgressStat(
-                emoji: '⭐',
-                value: _englishProgress.lessons.values
-                    .fold<int>(0, (sum, l) => sum + l.stars)
-                    .toString(),
-                label: 'Звёзд',
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ProgressStat extends StatelessWidget {
-  final String emoji;
-  final String value;
-  final String label;
-
-  const _ProgressStat(
-      {required this.emoji, required this.value, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Column(
-        children: [
-          Text(emoji, style: const TextStyle(fontSize: 22)),
-          const SizedBox(height: 4),
-          Text(value,
-              style: GoogleFonts.playfairDisplay(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: const Color(0xFF1A1A1A))),
-          Text(label,
-              style: GoogleFonts.inter(
-                  fontSize: 10, color: const Color(0xFF999999)),
-              textAlign: TextAlign.center),
+              size: 14, color: YgeiaColors.textMuted),
         ],
       ),
     );
@@ -647,16 +534,14 @@ class _MenuItem extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFFFAF4EC),
+        color: YgeiaColors.bgCard,
         borderRadius: BorderRadius.circular(12),
       ),
       child: ListTile(
-        leading: Icon(icon, color: const Color(0xFF2D6A4F)),
-        title: Text(title,
-            style: GoogleFonts.inter(
-                fontSize: 15, color: const Color(0xFF1A1A1A))),
+        leading: Icon(icon, color: YgeiaColors.accent),
+        title: Text(title, style: YgeiaTypography.body),
         trailing: const Icon(Icons.arrow_forward_ios,
-            size: 14, color: Color(0xFF999999)),
+            size: 14, color: YgeiaColors.textMuted),
         onTap: () {},
       ),
     );
@@ -674,24 +559,21 @@ class _NotificationTile extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFFFAF4EC),
+        color: YgeiaColors.bgCard,
         borderRadius: BorderRadius.circular(12),
       ),
       child: ListTile(
         leading: const Icon(Icons.notifications_outlined,
-            color: Color(0xFF2D6A4F)),
-        title: Text('Уведомления',
-            style: GoogleFonts.inter(
-                fontSize: 15, color: const Color(0xFF1A1A1A))),
+            color: YgeiaColors.accent),
+        title: Text('Уведомления', style: YgeiaTypography.body),
         subtitle: Text(
-          enabled ? 'Утро 8:00 · Английский 20:00' : 'Выключены',
-          style: GoogleFonts.inter(
-              fontSize: 12, color: const Color(0xFF999999)),
+          enabled ? 'Утро 8:00 · Вечер 20:00' : 'Выключены',
+          style: YgeiaTypography.caption,
         ),
         trailing: Switch(
           value: enabled,
           onChanged: onChanged,
-          activeColor: const Color(0xFF2D6A4F),
+          activeColor: YgeiaColors.accent,
         ),
       ),
     );
@@ -713,16 +595,14 @@ class _SheetOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color =
-        isDestructive ? Colors.red[700]! : const Color(0xFF1A1A1A);
+    final color = isDestructive ? Colors.red[700]! : YgeiaColors.textPrimary;
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        padding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: isDestructive
-              ? Colors.red[50]
-              : const Color(0xFFF0E8DA),
+          color: isDestructive ? Colors.red[50] : YgeiaColors.bgCardElevated,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(

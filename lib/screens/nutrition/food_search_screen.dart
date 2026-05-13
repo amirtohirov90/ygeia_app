@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../data/food_database.dart';
 import '../../models/food_item.dart';
+import '../../theme/colors.dart';
 
 class FoodSearchScreen extends StatefulWidget {
   final String mealType;
@@ -29,9 +30,9 @@ class _FoodSearchScreenState extends State<FoodSearchScreen> {
     final categories = foodCategories;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF0E8DA),
+      backgroundColor: YgeiaColors.bgBase,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF2D6A4F),
+        backgroundColor: YgeiaColors.accent,
         iconTheme: const IconThemeData(color: Colors.white),
         title: TextField(
           controller: _ctrl,
@@ -66,13 +67,13 @@ class _FoodSearchScreenState extends State<FoodSearchScreen> {
                         horizontal: 14, vertical: 4),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? const Color(0xFF2D6A4F)
-                          : const Color(0xFFFAF4EC),
+                          ? YgeiaColors.accent
+                          : YgeiaColors.bgCard,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
                           color: isSelected
-                              ? const Color(0xFF2D6A4F)
-                              : const Color(0xFFDDD5C8)),
+                              ? YgeiaColors.accent
+                              : YgeiaColors.divider),
                     ),
                     child: Text(cat,
                         style: GoogleFonts.inter(
@@ -80,7 +81,7 @@ class _FoodSearchScreenState extends State<FoodSearchScreen> {
                             fontWeight: FontWeight.w600,
                             color: isSelected
                                 ? Colors.white
-                                : const Color(0xFF666666))),
+                                : YgeiaColors.textSecondary)),
                   ),
                 );
               },
@@ -120,7 +121,7 @@ class _FoodTile extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFFFAF4EC),
+        color: YgeiaColors.bgCard,
         borderRadius: BorderRadius.circular(12),
       ),
       child: ListTile(
@@ -130,17 +131,17 @@ class _FoodTile extends StatelessWidget {
             style: GoogleFonts.inter(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: const Color(0xFF1A1A1A))),
+                color: YgeiaColors.textPrimary)),
         subtitle: Text(
           '${food.calories.round()} ккал · Б:${food.protein.round()} Ж:${food.fat.round()} У:${food.carbs.round()} · на 100г',
           style: GoogleFonts.inter(
-              fontSize: 11, color: const Color(0xFF999999)),
+              fontSize: 11, color: YgeiaColors.textMuted),
         ),
         trailing: Container(
           width: 32,
           height: 32,
           decoration: const BoxDecoration(
-            color: Color(0xFF2D6A4F),
+            color: YgeiaColors.accent,
             shape: BoxShape.circle,
           ),
           child: const Icon(Icons.add, color: Colors.white, size: 18),
@@ -154,7 +155,7 @@ class _FoodTile extends StatelessWidget {
     double amount = 100;
     showModalBottomSheet(
       context: context,
-      backgroundColor: const Color(0xFFFAF4EC),
+      backgroundColor: YgeiaColors.bgCard,
       shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (ctx) => StatefulBuilder(
@@ -167,15 +168,15 @@ class _FoodTile extends StatelessWidget {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                    color: const Color(0xFFDDD5C8),
+                    color: YgeiaColors.divider,
                     borderRadius: BorderRadius.circular(2)),
               ),
               const SizedBox(height: 20),
               Text(food.name,
-                  style: GoogleFonts.playfairDisplay(
+                  style: GoogleFonts.fraunces(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: const Color(0xFF1A1A1A))),
+                      color: YgeiaColors.textPrimary)),
               const SizedBox(height: 8),
               Text(
                 '${(food.calories * amount / 100).round()} ккал · '
@@ -183,7 +184,8 @@ class _FoodTile extends StatelessWidget {
                 'Ж:${(food.fat * amount / 100).toStringAsFixed(1)}г · '
                 'У:${(food.carbs * amount / 100).toStringAsFixed(1)}г',
                 style: GoogleFonts.inter(
-                    fontSize: 13, color: const Color(0xFF2D6A4F),
+                    fontSize: 13,
+                    color: YgeiaColors.accent,
                     fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 20),
@@ -192,24 +194,23 @@ class _FoodTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(amount.round().toString(),
-                      style: GoogleFonts.playfairDisplay(
+                      style: GoogleFonts.fraunces(
                           fontSize: 56,
                           fontWeight: FontWeight.bold,
-                          color: const Color(0xFF2D6A4F))),
+                          color: YgeiaColors.accent)),
                   const Padding(
                     padding: EdgeInsets.only(bottom: 10, left: 6),
                     child: Text('г',
                         style: TextStyle(
-                            fontSize: 18, color: Color(0xFF999999))),
+                            fontSize: 18, color: YgeiaColors.textMuted)),
                   ),
                 ],
               ),
               SliderTheme(
                 data: SliderTheme.of(ctx).copyWith(
-                  activeTrackColor: const Color(0xFF2D6A4F),
-                  inactiveTrackColor:
-                      const Color(0xFF2D6A4F).withOpacity(0.15),
-                  thumbColor: const Color(0xFF2D6A4F),
+                  activeTrackColor: YgeiaColors.accent,
+                  inactiveTrackColor: YgeiaColors.accent.withOpacity(0.15),
+                  thumbColor: YgeiaColors.accent,
                   trackHeight: 6,
                   thumbShape:
                       const RoundSliderThumbShape(enabledThumbRadius: 14),
@@ -231,11 +232,11 @@ class _FoodTile extends StatelessWidget {
                     onSelected(amount);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2D6A4F),
+                    backgroundColor: YgeiaColors.accent,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
+                        borderRadius: BorderRadius.circular(999)),
                   ),
                   child: Text('Добавить',
                       style: GoogleFonts.inter(
