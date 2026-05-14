@@ -14,4 +14,7 @@ class FeatureFlags {
   /// In-app purchases / YooKassa payments.
   /// Set true after ИП is registered and keys configured.
   static const bool kPaymentsEnabled = false;
+
+  /// Default pillar tab on app start (one of: today/body/mind/emotions/meaning/life).
+  static const String kDefaultPillar = 'today';
 }

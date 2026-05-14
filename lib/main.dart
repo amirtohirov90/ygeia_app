@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 import 'theme/app_theme.dart';
 import 'theme/colors.dart';
-import 'screens/feed_screen.dart';
-import 'screens/lessons_screen.dart';
-import 'screens/profile_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/splash_screen.dart';
-import 'screens/nutrition/nutrition_screen.dart';
+import 'screens/pillars/today_screen.dart';
+import 'screens/pillars/body_screen.dart';
+import 'screens/pillars/mind_screen.dart';
+import 'screens/pillars/emotions_screen.dart';
+import 'screens/pillars/meaning_screen.dart';
+import 'screens/pillars/life_screen.dart';
 import 'services/notification_service.dart';
 
 void main() async {
@@ -89,13 +92,16 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
 
-  // 4 tabs: Лента · Уроки · Профиль · КБЖУ
-  // Club and Shop are hidden behind kClubEnabled / kPaymentsEnabled flags
+  // 6 pillars: Сегодня · Тело · Ум · Эмоции · Смысл · Жизнь
+  // FeedScreen / LessonsScreen / ProfileScreen / NutritionScreen
+  // are intentionally retained off-navigation — they return in Phase 2.2 and 2.3.
   static const List<Widget> _screens = [
-    FeedScreen(),
-    LessonsScreen(),
-    ProfileScreen(),
-    NutritionScreen(),
+    TodayScreen(),
+    BodyScreen(),
+    MindScreen(),
+    EmotionsScreen(),
+    MeaningScreen(),
+    LifeScreen(),
   ];
 
   @override
@@ -107,31 +113,24 @@ class _MainScreenState extends State<MainScreen> {
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
-        onDestinationSelected: (index) =>
-            setState(() => _currentIndex = index),
-        backgroundColor: YgeiaColors.bgCard,
-        indicatorColor: YgeiaColors.accentSoft,
+        onDestinationSelected: (i) => setState(() => _currentIndex = i),
+        backgroundColor: YgeiaColors.bgBase,
+        elevation: 3,
+        shadowColor: Colors.black,
+        surfaceTintColor: Colors.transparent,
         destinations: const [
           NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
-            label: 'Лента',
-          ),
+              icon: Icon(LucideIcons.sun), label: 'Сегодня'),
           NavigationDestination(
-            icon: Icon(Icons.menu_book_outlined),
-            selectedIcon: Icon(Icons.menu_book),
-            label: 'Уроки',
-          ),
+              icon: Icon(LucideIcons.activity), label: 'Тело'),
           NavigationDestination(
-            icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person),
-            label: 'Профиль',
-          ),
+              icon: Icon(LucideIcons.brain), label: 'Ум'),
           NavigationDestination(
-            icon: Icon(Icons.bar_chart_outlined),
-            selectedIcon: Icon(Icons.bar_chart),
-            label: 'КБЖУ',
-          ),
+              icon: Icon(LucideIcons.heart), label: 'Эмоции'),
+          NavigationDestination(
+              icon: Icon(LucideIcons.compass), label: 'Смысл'),
+          NavigationDestination(
+              icon: Icon(LucideIcons.users), label: 'Жизнь'),
         ],
       ),
     );
