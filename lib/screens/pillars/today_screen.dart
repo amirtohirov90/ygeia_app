@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../theme/colors.dart';
-import '../../theme/spacing.dart';
+import '../../widgets/feed_content.dart';
+import '../profile_screen.dart';
 
 class TodayScreen extends StatelessWidget {
   const TodayScreen({super.key});
@@ -36,22 +37,13 @@ class TodayScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(LucideIcons.user),
             color: YgeiaColors.textPrimary,
-            onPressed: () {},
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const ProfileScreen()),
+            ),
           ),
         ],
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(YgeiaSpacing.lg),
-          child: Text(
-            'Скоро здесь будет... Сегодня',
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: YgeiaColors.textSecondary,
-                ),
-          ),
-        ),
-      ),
+      body: const FeedContent(),
     );
   }
 }
