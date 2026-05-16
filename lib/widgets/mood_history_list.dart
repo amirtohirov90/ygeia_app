@@ -81,11 +81,9 @@ class _EntryRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dotColor = dotColors[(entry.level - 1).clamp(0, 4)];
-    return SizedBox(
-      height: 56,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 12),
-        child: Row(
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 12),
+      child: Row(
           children: [
             Container(
               width: 16,
@@ -121,8 +119,7 @@ class _EntryRow extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 
   String _formatDate(DateTime date) {

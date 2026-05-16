@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../theme/colors.dart';
+import '../../theme/spacing.dart';
 import '../../widgets/feed_content.dart';
+import '../../widgets/insight_card.dart';
+import '../../services/daily_insight_service.dart';
 import '../profile_screen.dart';
 import '../search_screen.dart';
 
@@ -48,7 +51,18 @@ class _TodayScreenState extends State<TodayScreen> {
           ),
         ],
       ),
-      body: FeedContent(showFavorites: _showFavorites),
+      body: SafeArea(
+        child: Column(
+          children: [
+            const SizedBox(height: YgeiaSpacing.md),
+            InsightCard(insight: DailyInsightService.todaysInsight()),
+            const SizedBox(height: YgeiaSpacing.md),
+            Expanded(
+              child: FeedContent(showFavorites: _showFavorites),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

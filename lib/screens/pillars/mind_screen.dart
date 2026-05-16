@@ -3,6 +3,8 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../theme/colors.dart';
 import '../../theme/spacing.dart';
 import '../../widgets/pillar_section_card.dart';
+import '../../widgets/book_card.dart';
+import '../../data/books.dart';
 
 class MindScreen extends StatelessWidget {
   const MindScreen({super.key});
@@ -19,27 +21,29 @@ class MindScreen extends StatelessWidget {
           top: YgeiaSpacing.lg,
           bottom: YgeiaSpacing.md,
         ),
-        children: const [
-          PillarSectionCard(
+        children: [
+          const PillarSectionCard(
             icon: LucideIcons.brain,
             title: 'Медитация',
             subtitle: 'Скоро · вход в Клуб',
             isDimmed: true,
           ),
-          SizedBox(height: 10),
-          PillarSectionCard(
+          const SizedBox(height: 10),
+          const PillarSectionCard(
             icon: LucideIcons.target,
             title: 'Фокус',
             subtitle: 'Скоро · техники концентрации',
             isDimmed: true,
           ),
-          SizedBox(height: 10),
-          PillarSectionCard(
+          const SizedBox(height: 10),
+          const PillarSectionCard(
             icon: LucideIcons.zap,
             title: 'Стресс',
             subtitle: 'Скоро · работа с напряжением',
             isDimmed: true,
           ),
+          const SizedBox(height: YgeiaSpacing.xl),
+          BookCard(book: kBooks.firstWhere((b) => b.pillar == 'mind')),
         ],
       ),
       ),

@@ -3,8 +3,11 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../theme/colors.dart';
 import '../../theme/spacing.dart';
 import '../../widgets/pillar_section_card.dart';
+import '../../widgets/book_card.dart';
+import '../../data/books.dart';
 import '../nutrition/nutrition_screen.dart';
 import '../lessons_screen.dart';
+import '../practices/breathing_478_screen.dart';
 
 class BodyScreen extends StatelessWidget {
   const BodyScreen({super.key});
@@ -49,12 +52,18 @@ class BodyScreen extends StatelessWidget {
             isDimmed: true,
           ),
           const SizedBox(height: 10),
-          const PillarSectionCard(
+          PillarSectionCard(
             icon: LucideIcons.wind,
             title: 'Дыхание',
-            subtitle: 'Скоро · практики 4-7-8',
-            isDimmed: true,
+            subtitle: 'Практика 4-7-8',
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (_) => const Breathing478Screen()),
+            ),
           ),
+          const SizedBox(height: YgeiaSpacing.xl),
+          BookCard(book: kBooks.firstWhere((b) => b.pillar == 'body')),
         ],
       ),
       ),

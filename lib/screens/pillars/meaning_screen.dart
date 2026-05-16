@@ -3,6 +3,8 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../theme/colors.dart';
 import '../../theme/spacing.dart';
 import '../../widgets/coming_soon_section.dart';
+import '../../widgets/book_card.dart';
+import '../../data/books.dart';
 
 class MeaningScreen extends StatelessWidget {
   const MeaningScreen({super.key});
@@ -12,17 +14,24 @@ class MeaningScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: YgeiaColors.bgBase,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.only(top: YgeiaSpacing.lg),
-          child: const ComingSoonSection(
-            pillarName: 'Смысл',
-            pillarIcon: LucideIcons.compass,
-            upcoming: [
-              'Утренние ритуалы',
-              'Вечерние ритуалы',
-              'Журнал благодарности',
-            ],
-          ),
+        child: Column(
+          children: [
+            const SizedBox(height: YgeiaSpacing.lg),
+            const Expanded(
+              child: ComingSoonSection(
+                pillarName: 'Смысл',
+                pillarIcon: LucideIcons.compass,
+                upcoming: [
+                  'Утренние ритуалы',
+                  'Вечерние ритуалы',
+                  'Журнал благодарности',
+                ],
+              ),
+            ),
+            const SizedBox(height: YgeiaSpacing.xl),
+            BookCard(book: kBooks.firstWhere((b) => b.pillar == 'meaning')),
+            const SizedBox(height: YgeiaSpacing.xxl),
+          ],
         ),
       ),
     );
