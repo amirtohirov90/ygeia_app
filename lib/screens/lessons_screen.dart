@@ -4,6 +4,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../config/feature_flags.dart';
 import '../theme/colors.dart';
 import '../theme/typography.dart';
+import '../widgets/pillar_app_bar.dart';
 import 'lesson_detail_screen.dart';
 import 'english/english_home_screen.dart';
 
@@ -14,10 +15,11 @@ class LessonsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: YgeiaColors.bgBase,
-      appBar: AppBar(
-        title: Text('Уроки', style: YgeiaTypography.h2),
-        backgroundColor: YgeiaColors.bgBase,
-        elevation: 0,
+      appBar: const PillarAppBar(
+        title: 'Уроки',
+        italicFromIndex: 1,
+        automaticallyImplyLeading: true,
+        fontSize: 24,
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),

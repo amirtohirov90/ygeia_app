@@ -95,17 +95,13 @@ class _NutritionScreenState extends State<NutritionScreen> {
               backgroundColor: Colors.transparent,
               elevation: 0,
               foregroundColor: YgeiaColors.textPrimary,
-              title: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.eco, size: 20, color: YgeiaColors.accent),
-                  const SizedBox(width: 8),
-                  Text('КБЖУ',
-                      style: GoogleFonts.fraunces(
-                          color: YgeiaColors.textPrimary,
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold)),
-                ],
+              title: Text(
+                'КБЖУ',
+                style: GoogleFonts.fraunces(
+                  color: YgeiaColors.textPrimary,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               actions: [
                 IconButton(

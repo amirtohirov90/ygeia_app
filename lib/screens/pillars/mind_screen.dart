@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../theme/colors.dart';
 import '../../theme/spacing.dart';
@@ -10,33 +9,15 @@ class MindScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final base = Theme.of(context).textTheme.headlineLarge!;
-    final italic = GoogleFonts.fraunces(
-      fontSize: base.fontSize,
-      fontWeight: base.fontWeight,
-      color: base.color,
-      fontStyle: FontStyle.italic,
-    );
-
     return Scaffold(
       backgroundColor: YgeiaColors.bgBase,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: Text.rich(
-          TextSpan(
-            style: base,
-            children: [
-              TextSpan(text: 'У', style: italic),
-              const TextSpan(text: 'м'),
-            ],
-          ),
-        ),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.symmetric(
-          horizontal: YgeiaSpacing.md,
-          vertical: YgeiaSpacing.md,
+      body: SafeArea(
+        child: ListView(
+        padding: const EdgeInsets.only(
+          left: YgeiaSpacing.md,
+          right: YgeiaSpacing.md,
+          top: YgeiaSpacing.lg,
+          bottom: YgeiaSpacing.md,
         ),
         children: const [
           PillarSectionCard(
@@ -60,6 +41,7 @@ class MindScreen extends StatelessWidget {
             isDimmed: true,
           ),
         ],
+      ),
       ),
     );
   }

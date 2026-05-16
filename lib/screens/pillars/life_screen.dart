@@ -1,45 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import '../../theme/colors.dart';
 import '../../theme/spacing.dart';
+import '../../widgets/coming_soon_section.dart';
 
 class LifeScreen extends StatelessWidget {
   const LifeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final base = Theme.of(context).textTheme.headlineLarge!;
-    final italic = GoogleFonts.fraunces(
-      fontSize: base.fontSize,
-      fontWeight: base.fontWeight,
-      color: base.color,
-      fontStyle: FontStyle.italic,
-    );
-
     return Scaffold(
       backgroundColor: YgeiaColors.bgBase,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: Text.rich(
-          TextSpan(
-            style: base,
-            children: [
-              TextSpan(text: 'Ж', style: italic),
-              const TextSpan(text: 'изнь'),
-            ],
-          ),
-        ),
-      ),
-      body: Center(
+      body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(YgeiaSpacing.lg),
-          child: Text(
-            'Скоро здесь будет... Жизнь',
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: YgeiaColors.textSecondary,
-                ),
+          padding: const EdgeInsets.only(top: YgeiaSpacing.lg),
+          child: const ComingSoonSection(
+            pillarName: 'Жизнь',
+            pillarIcon: LucideIcons.users,
+            upcoming: [
+              'Цифровая гигиена',
+              'Связи и общение',
+              'Среда обитания',
+            ],
           ),
         ),
       ),

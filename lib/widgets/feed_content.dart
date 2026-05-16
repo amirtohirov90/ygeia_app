@@ -7,10 +7,11 @@ import '../theme/colors.dart';
 import '../theme/typography.dart';
 import '../widgets/highlighted_text.dart';
 import '../screens/post_detail_screen.dart';
-import '../screens/search_screen.dart';
 
 class FeedContent extends StatefulWidget {
-  const FeedContent({super.key});
+  final bool showFavorites;
+
+  const FeedContent({super.key, this.showFavorites = false});
 
   @override
   State<FeedContent> createState() => _FeedContentState();
@@ -18,13 +19,20 @@ class FeedContent extends StatefulWidget {
 
 class _FeedContentState extends State<FeedContent> {
   final FirestoreService _service = FirestoreService();
-  bool _showFavorites = false;
   Set<String> _favoriteIds = {};
 
   @override
   void initState() {
     super.initState();
     _loadFavorites();
+  }
+
+  @override
+  void didUpdateWidget(FeedContent old) {
+    super.didUpdateWidget(old);
+    if (widget.showFavorites && !old.showFavorites) {
+      _loadFavorites();
+    }
   }
 
   Future<void> _loadFavorites() async {
@@ -37,7 +45,7 @@ class _FeedContentState extends State<FeedContent> {
   }
 
   List<Post> _filter(List<Post> posts) {
-    if (_showFavorites) {
+    if (widget.showFavorites) {
       return posts.where((p) => _favoriteIds.contains(p.id)).toList();
     }
     return posts;
@@ -45,96 +53,60 @@ class _FeedContentState extends State<FeedContent> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.search,
-                    color: YgeiaColors.textSecondary),
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const SearchScreen()),
+    return StreamBuilder<List<Post>>(
+      stream: _service.getPosts(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(color: YgeiaColors.accent),
+          );
+        }
+
+        final allPosts = (snapshot.hasData && snapshot.data!.isNotEmpty)
+            ? snapshot.data!
+            : _staticPosts.map((m) => Post.fromMap(m)).toList();
+
+        final posts = _filter(allPosts);
+
+        if (posts.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  widget.showFavorites
+                      ? Icons.bookmark_border
+                      : Icons.article_outlined,
+                  size: 56,
+                  color: YgeiaColors.textMuted,
                 ),
-              ),
-              IconButton(
-                icon: Icon(
-                  _showFavorites ? Icons.bookmark : Icons.bookmark_border,
-                  color: _showFavorites
-                      ? YgeiaColors.accent
-                      : YgeiaColors.textSecondary,
+                const SizedBox(height: 12),
+                Text(
+                  widget.showFavorites
+                      ? 'Нет сохранённых статей'
+                      : 'Нет публикаций',
+                  style: YgeiaTypography.bodySmall,
                 ),
-                onPressed: () {
-                  _loadFavorites();
-                  setState(() => _showFavorites = !_showFavorites);
-                },
-              ),
-            ],
+              ],
+            ),
+          );
+        }
+
+        return RefreshIndicator(
+          color: YgeiaColors.accent,
+          backgroundColor: YgeiaColors.bgCard,
+          onRefresh: () async => _loadFavorites(),
+          child: ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: posts.length,
+            itemBuilder: (context, index) => PostCard(
+              post: posts[index],
+              query: '',
+              onFavoriteChanged: _loadFavorites,
+            ),
           ),
-        ),
-        Expanded(
-          child: StreamBuilder<List<Post>>(
-            stream: _service.getPosts(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child:
-                      CircularProgressIndicator(color: YgeiaColors.accent),
-                );
-              }
-
-              final allPosts =
-                  (snapshot.hasData && snapshot.data!.isNotEmpty)
-                      ? snapshot.data!
-                      : _staticPosts.map((m) => Post.fromMap(m)).toList();
-
-              final posts = _filter(allPosts);
-
-              if (posts.isEmpty) {
-                return Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        _showFavorites
-                            ? Icons.bookmark_border
-                            : Icons.article_outlined,
-                        size: 56,
-                        color: YgeiaColors.textMuted,
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        _showFavorites
-                            ? 'Нет сохранённых статей'
-                            : 'Нет публикаций',
-                        style: YgeiaTypography.bodySmall,
-                      ),
-                    ],
-                  ),
-                );
-              }
-
-              return RefreshIndicator(
-                color: YgeiaColors.accent,
-                backgroundColor: YgeiaColors.bgCard,
-                onRefresh: () async => _loadFavorites(),
-                child: ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: posts.length,
-                  itemBuilder: (context, index) => PostCard(
-                    post: posts[index],
-                    query: '',
-                    onFavoriteChanged: _loadFavorites,
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-      ],
+        );
+      },
     );
   }
 }
