@@ -5,6 +5,7 @@ import '../../theme/spacing.dart';
 import '../../widgets/coming_soon_section.dart';
 import '../../widgets/book_card.dart';
 import '../../data/books.dart';
+import '../../config/feature_flags.dart';
 
 class LifeScreen extends StatelessWidget {
   const LifeScreen({super.key});
@@ -28,8 +29,10 @@ class LifeScreen extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: YgeiaSpacing.xl),
-            BookCard(book: kBooks.firstWhere((b) => b.pillar == 'life')),
+            if (FeatureFlags.kBooksEnabled) ...[
+              const SizedBox(height: YgeiaSpacing.xl),
+              BookCard(book: kBooks.firstWhere((b) => b.pillar == 'life')),
+            ],
             const SizedBox(height: YgeiaSpacing.xxl),
           ],
         ),

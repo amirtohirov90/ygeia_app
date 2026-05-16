@@ -5,6 +5,7 @@ import '../../theme/spacing.dart';
 import '../../widgets/pillar_section_card.dart';
 import '../../widgets/book_card.dart';
 import '../../data/books.dart';
+import '../../config/feature_flags.dart';
 
 class MindScreen extends StatelessWidget {
   const MindScreen({super.key});
@@ -42,8 +43,10 @@ class MindScreen extends StatelessWidget {
             subtitle: 'Скоро · работа с напряжением',
             isDimmed: true,
           ),
-          const SizedBox(height: YgeiaSpacing.xl),
-          BookCard(book: kBooks.firstWhere((b) => b.pillar == 'mind')),
+          if (FeatureFlags.kBooksEnabled) ...[
+            const SizedBox(height: YgeiaSpacing.xl),
+            BookCard(book: kBooks.firstWhere((b) => b.pillar == 'mind')),
+          ],
         ],
       ),
       ),

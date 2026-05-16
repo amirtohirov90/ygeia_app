@@ -5,14 +5,16 @@ import '../theme/colors.dart';
 class MoodScale extends StatelessWidget {
   final int? selected;
   final ValueChanged<int> onChanged;
+  final List<String>? labels;
 
   const MoodScale({
     super.key,
     required this.selected,
     required this.onChanged,
+    this.labels,
   });
 
-  static const _labels = ['Тяжело', 'Сложно', 'Ровно', 'Хорошо', 'Прекрасно'];
+  static const _defaultLabels = ['Тяжело', 'Сложно', 'Ровно', 'Хорошо', 'Прекрасно'];
 
   // Level 2: lerp(accentSecondary, bgCard, 0.5) = (#C97B5C + #F2EDE3) / 2
   // Level 4: lerp(bgCard, accent, 0.5) = (#F2EDE3 + #5B7F6A) / 2
@@ -26,6 +28,7 @@ class MoodScale extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final effectiveLabels = labels ?? _defaultLabels;
     return Row(
       children: List.generate(5, (i) {
         final level = i + 1;
@@ -50,7 +53,7 @@ class MoodScale extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  _labels[i],
+                  effectiveLabels[i],
                   textAlign: TextAlign.center,
                   style: GoogleFonts.inter(
                     fontSize: 11,

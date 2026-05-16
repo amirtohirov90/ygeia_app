@@ -15,6 +15,11 @@ class FeatureFlags {
   /// Set true after ИП is registered and keys configured.
   static const bool kPaymentsEnabled = false;
 
+  /// Карточки книг (Базис/Дзен/Ритм/Калибр) временно скрыты в MVP.
+  /// Включить = true, когда будем готовы к монетизации (Фаза 4-5).
+  /// Код книг сохранён: lib/data/books.dart, lib/widgets/book_card.dart
+  static const bool kBooksEnabled = false;
+
   /// Default pillar tab on app start (one of: today/body/mind/emotions/meaning/life).
   static const String kDefaultPillar = 'today';
 }

@@ -5,9 +5,11 @@ import '../../theme/spacing.dart';
 import '../../widgets/pillar_section_card.dart';
 import '../../widgets/book_card.dart';
 import '../../data/books.dart';
+import '../../config/feature_flags.dart';
 import '../nutrition/nutrition_screen.dart';
 import '../lessons_screen.dart';
 import '../practices/breathing_478_screen.dart';
+import '../practices/sleep_tracker_screen.dart';
 
 class BodyScreen extends StatelessWidget {
   const BodyScreen({super.key});
@@ -45,11 +47,15 @@ class BodyScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          const PillarSectionCard(
+          PillarSectionCard(
             icon: LucideIcons.moon,
             title: 'Сон',
-            subtitle: 'Скоро · вход в Клуб',
-            isDimmed: true,
+            subtitle: 'Качество и часы',
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (_) => const SleepTrackerScreen()),
+            ),
           ),
           const SizedBox(height: 10),
           PillarSectionCard(
@@ -62,8 +68,10 @@ class BodyScreen extends StatelessWidget {
                   builder: (_) => const Breathing478Screen()),
             ),
           ),
-          const SizedBox(height: YgeiaSpacing.xl),
-          BookCard(book: kBooks.firstWhere((b) => b.pillar == 'body')),
+          if (FeatureFlags.kBooksEnabled) ...[
+            const SizedBox(height: YgeiaSpacing.xl),
+            BookCard(book: kBooks.firstWhere((b) => b.pillar == 'body')),
+          ],
         ],
       ),
       ),
