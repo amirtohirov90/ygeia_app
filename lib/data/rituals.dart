@@ -73,4 +73,40 @@ const List<Ritual> kRituals = [
       ),
     ],
   ),
+  Ritual(
+    id: 'digital',
+    title: 'Цифровая гигиена',
+    steps: [
+      RitualStep(
+        id: 'no_phone_hour',
+        text: 'Час без телефона',
+        hint: 'После пробуждения и перед сном',
+      ),
+      RitualStep(
+        id: 'delete_unused',
+        text: 'Удалить отложенные приложения',
+        hint: 'Те что не использовал больше 30 дней',
+      ),
+      RitualStep(
+        id: 'mute_notifications',
+        text: 'Уведомления только важные',
+        hint: 'Отключить почту, новости, маркетинг',
+      ),
+      RitualStep(
+        id: 'one_screen',
+        text: 'Один экран — одна задача',
+        hint: 'Без вкладок-параллелей',
+      ),
+      RitualStep(
+        id: 'dark_evening',
+        text: 'Тёмный режим вечером',
+        hint: 'Защита глаз и качество сна',
+      ),
+      RitualStep(
+        id: 'digital_sabbath',
+        text: 'День без соцсетей',
+        hint: 'Один день в неделю — цифровой шаббат',
+      ),
+    ],
+  ),
 ];

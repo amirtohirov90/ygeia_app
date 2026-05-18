@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import '../../services/mood_service.dart';
 import '../../theme/colors.dart';
+import '../../theme/spacing.dart';
 import '../../theme/typography.dart';
 import '../../widgets/mood_scale.dart';
 import '../../widgets/mood_history_list.dart';
+import '../practices/journal_screen.dart';
 
 class EmotionsScreen extends StatefulWidget {
   const EmotionsScreen({super.key});
@@ -74,6 +77,22 @@ class _EmotionsScreenState extends State<EmotionsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: YgeiaColors.bgBase,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            icon: const Icon(LucideIcons.bookOpen, color: YgeiaColors.textSecondary),
+            tooltip: 'Журнал',
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const JournalScreen()),
+            ),
+          ),
+          const SizedBox(width: YgeiaSpacing.sm),
+        ],
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
@@ -85,15 +104,6 @@ class _EmotionsScreenState extends State<EmotionsScreen> {
               MoodHistoryList(
                 key: ValueKey(_historyRefresh),
                 service: _service,
-              ),
-              const SizedBox(height: 24),
-              Text(
-                'Скоро · журнал мыслей, колесо эмоций',
-                textAlign: TextAlign.center,
-                style: GoogleFonts.inter(
-                  fontSize: 12,
-                  color: YgeiaColors.textMuted,
-                ),
               ),
             ],
           ),

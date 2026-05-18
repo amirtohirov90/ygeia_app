@@ -66,7 +66,7 @@ class RitualService {
   Future<Map<String, Set<String>>> _loadPrefs() async {
     final prefs = await SharedPreferences.getInstance();
     final raw = prefs.getString(_prefsKey());
-    if (raw == null) return {'morning': {}, 'evening': {}};
+    if (raw == null) return {'morning': {}, 'evening': {}, 'digital': {}};
     return _parseDoc(json.decode(raw) as Map<String, dynamic>);
   }
 
@@ -77,6 +77,7 @@ class RitualService {
       json.encode({
         'morning': progress['morning']!.toList(),
         'evening': progress['evening']!.toList(),
+        'digital': (progress['digital'] ?? <String>{}).toList(),
       }),
     );
   }
@@ -104,5 +105,7 @@ class RitualService {
             (data['morning'] as List<dynamic>? ?? []).cast<String>()),
         'evening': Set<String>.from(
             (data['evening'] as List<dynamic>? ?? []).cast<String>()),
+        'digital': Set<String>.from(
+            (data['digital'] as List<dynamic>? ?? []).cast<String>()),
       };
 }
