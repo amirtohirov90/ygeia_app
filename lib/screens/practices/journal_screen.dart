@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../models/journal_entry.dart';
 import '../../services/journal_service.dart';
+import '../../services/analytics_service.dart';
 import '../../theme/colors.dart';
 import '../../theme/spacing.dart';
 
@@ -34,6 +35,7 @@ class _JournalScreenState extends State<JournalScreen> {
     final text = _controller.text.trim();
     if (text.isEmpty) return;
     await _service.addEntry(text);
+    AnalyticsService.logJournalEntryAdded();
     if (!mounted) return;
     _controller.clear();
     FocusScope.of(context).unfocus();

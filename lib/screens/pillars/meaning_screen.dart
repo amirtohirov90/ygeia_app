@@ -3,6 +3,7 @@ import '../../config/feature_flags.dart';
 import '../../data/books.dart';
 import '../../data/rituals.dart';
 import '../../services/ritual_service.dart';
+import '../../services/analytics_service.dart';
 import '../../theme/colors.dart';
 import '../../theme/spacing.dart';
 import '../../widgets/book_card.dart';
@@ -21,6 +22,7 @@ class _MeaningScreenState extends State<MeaningScreen> {
 
   Future<void> _toggleStep(String ritualId, String stepId) async {
     await _ritualService.toggleStep(ritualId, stepId);
+    AnalyticsService.logRitualStepCompleted(ritualId: ritualId, stepId: stepId);
     if (mounted) setState(() => _progressRefresh++);
   }
 

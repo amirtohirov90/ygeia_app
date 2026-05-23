@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../services/mood_service.dart';
+import '../../services/analytics_service.dart';
 import '../../theme/colors.dart';
 import '../../theme/spacing.dart';
 import '../../theme/typography.dart';
@@ -54,6 +55,7 @@ class _EmotionsScreenState extends State<EmotionsScreen> {
     if (_selectedLevel == null) return;
     setState(() => _saving = true);
     await _service.saveMoodToday(_selectedLevel!, _noteController.text);
+    AnalyticsService.logMoodSaved(_selectedLevel!);
     if (!mounted) return;
     setState(() {
       _saving = false;
@@ -88,7 +90,10 @@ class _EmotionsScreenState extends State<EmotionsScreen> {
             tooltip: 'Колесо эмоций',
             onPressed: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => const EmotionWheelScreen()),
+              MaterialPageRoute(
+                settings: const RouteSettings(name: '/emotion_wheel'),
+                builder: (_) => const EmotionWheelScreen(),
+              ),
             ),
           ),
           IconButton(
@@ -96,7 +101,10 @@ class _EmotionsScreenState extends State<EmotionsScreen> {
             tooltip: 'Журнал',
             onPressed: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => const JournalScreen()),
+              MaterialPageRoute(
+                settings: const RouteSettings(name: '/journal'),
+                builder: (_) => const JournalScreen(),
+              ),
             ),
           ),
           const SizedBox(width: YgeiaSpacing.sm),

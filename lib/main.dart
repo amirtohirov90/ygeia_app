@@ -14,6 +14,7 @@ import 'screens/pillars/emotions_screen.dart';
 import 'screens/pillars/meaning_screen.dart';
 import 'screens/pillars/life_screen.dart';
 import 'services/notification_service.dart';
+import 'services/analytics_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,6 +22,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await NotificationService.init();
+  // Analytics доступен сразу после Firebase.initializeApp
   runApp(const YgeiaApp());
 }
 
@@ -33,6 +35,7 @@ class YgeiaApp extends StatelessWidget {
       title: 'ygeia',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
+      navigatorObservers: [AnalyticsService.observer],
       home: const _AppEntry(),
     );
   }
@@ -92,6 +95,13 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
 
+  @override
+  void initState() {
+    super.initState();
+    // Логируем первый раздел сразу — Observer его не увидит (IndexedStack).
+    AnalyticsService.logPillarView(0);
+  }
+
   // 6 pillars: Сегодня · Тело · Ум · Эмоции · Смысл · Жизнь
   // FeedScreen / LessonsScreen / ProfileScreen / NutritionScreen
   // are intentionally retained off-navigation — they return in Phase 2.2 and 2.3.
@@ -113,7 +123,10 @@ class _MainScreenState extends State<MainScreen> {
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
-        onDestinationSelected: (i) => setState(() => _currentIndex = i),
+        onDestinationSelected: (i) {
+          setState(() => _currentIndex = i);
+          AnalyticsService.logPillarView(i);
+        },
         backgroundColor: YgeiaColors.bgBase,
         elevation: 3,
         shadowColor: Colors.black,

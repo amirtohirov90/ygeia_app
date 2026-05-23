@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../theme/colors.dart';
 import '../../theme/spacing.dart';
 import '../../widgets/pillar_app_bar.dart';
+import '../../services/analytics_service.dart';
 
 enum BreathPhase { idle, inhale, hold, exhale, completed }
 
@@ -43,6 +44,7 @@ class _Breathing478ScreenState extends State<Breathing478Screen> {
 
   void _start() {
     _currentCycle = 1;
+    AnalyticsService.logBreathingStarted();
     _startInhale();
   }
 

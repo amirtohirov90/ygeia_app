@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../data/emotions_wheel.dart';
 import '../../models/emotion_sector.dart';
 import '../../services/journal_service.dart';
+import '../../services/analytics_service.dart';
 import '../../theme/colors.dart';
 import '../../theme/spacing.dart';
 import 'journal_screen.dart';
@@ -44,6 +45,7 @@ class _EmotionWheelScreenState extends State<EmotionWheelScreen> {
 
     HapticFeedback.selectionClick();
     setState(() => _selectedIndex = index);
+    AnalyticsService.logEmotionWheelUsed(kEmotions[index].name);
   }
 
   Future<void> _save() async {
@@ -259,7 +261,9 @@ class _EmotionWheelScreenState extends State<EmotionWheelScreen> {
                 onPressed: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (_) => const JournalScreen()),
+                    settings: const RouteSettings(name: '/journal'),
+                    builder: (_) => const JournalScreen(),
+                  ),
                 ),
                 child: Text(
                   'или опиши своими словами',

@@ -65,7 +65,9 @@ class BodyScreen extends StatelessWidget {
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (_) => const Breathing478Screen()),
+                settings: const RouteSettings(name: '/breathing_478'),
+                builder: (_) => const Breathing478Screen(),
+              ),
             ),
           ),
           if (FeatureFlags.kBooksEnabled) ...[
